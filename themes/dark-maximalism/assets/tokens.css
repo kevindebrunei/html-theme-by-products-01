@@ -1,0 +1,70 @@
+/* Nơi DUY NHẤT chứa mã màu. Port sang theme thật = copy file này. */
+:root {
+  /* Gilded Dark — default scheme (spec §5) */
+  --bg: #0B0A08;
+  --surface: #14120E;
+  --fg: #F5F0E6;
+  --muted: #A29684;
+  --accent: #C9A227;        /* 8.18:1 trên --bg, WCAG AAA */
+  --accent-fg: #100E0A;
+  --border: #2A251C;
+
+  /* Parchment — inverse scheme (spec §5) */
+  --p-bg: #F6F1E7;
+  --p-surface: #FFFFFF;
+  --p-fg: #14120E;
+  --p-muted: #6B6151;
+  --p-accent: #7A5F18;      /* 5.37:1 — KHÔNG dùng #C9A227 trên nền sáng (2.1:1) */
+  --p-accent-fg: #FFFFFF;
+  --p-border: #DED5C4;
+
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+
+  --radius: 4px;
+  --maxw: 1200px;
+
+  /* Hiệu ứng & Transition phụ trợ */
+  --surface-raised: #1A1712;
+  --surface-card: #15130F;
+  --gold-glow: rgba(201, 162, 39, 0.16);
+  --gold-glow-hover: rgba(201, 162, 39, 0.38);
+  --gold-glow-intense: rgba(247, 212, 109, 0.5);
+  --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-gold: 0 0 25px rgba(201, 162, 39, 0.25);
+  --shadow-gold-lg: 0 12px 45px rgba(0, 0, 0, 0.85), 0 0 35px rgba(201, 162, 39, 0.35);
+  --shadow-sparkle: 0 0 15px rgba(255, 240, 184, 0.7), 0 0 30px rgba(201, 162, 39, 0.4);
+  
+  /* Bảng màu kim hoàn dát vàng (Metallic Foil & Shimmer) */
+  --gold-light: #FFF0B8;
+  --gold-bright: #F7D46D;
+  --gold-base: #C9A227;
+  --gold-rich: #DEB331;
+  --gold-dark: #8E6D14;
+  --gold-gradient: linear-gradient(135deg, #FFF0B8 0%, #F7D46D 30%, #C9A227 65%, #8E6D14 100%);
+  --gold-shimmer-sweep: linear-gradient(110deg, #9B7816 0%, #DEB331 20%, #FFF5CC 45%, #F7D46D 65%, #9B7816 100%);
+  --border-gold: rgba(201, 162, 39, 0.35);
+  --border-gold-glow: rgba(247, 212, 109, 0.7);
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+}
+
+/* Đảo sang Parchment cho announcement bar và footer */
+.parchment {
+  --bg: var(--p-bg);
+  --surface: var(--p-surface);
+  --fg: var(--p-fg);
+  --muted: var(--p-muted);
+  --accent: var(--p-accent);
+  --accent-fg: var(--p-accent-fg);
+  --border: var(--p-border);
+}

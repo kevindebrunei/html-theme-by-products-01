@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Goldbourne &amp; Co. — Gilded Editions in Tumblers, Caps, Backpacks and Shoes</title>
+<meta name="description" content="Gold-relief tumblers, caps, backpacks and shoes, released in named Editions. Crest, seasonal and gothic ornament. Gilded on every side.">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/components.css">
+</head>
+<body>
+
+<!-- Site Header Wrapper (Transparent initial, sticky with dark background on scroll) -->
+<header class="site-header-wrapper" id="siteHeaderWrapper">
+  <!-- 1. Announcement Bar -->
+  <div class="announce" id="announce" aria-live="off">Order by Oct 9 to arrive before Halloween.</div>
+
+  <div class="wrap">
+    <!-- 2. Site Header -->
+    <div class="site-header">
+      <a href="index.html" class="wordmark">Goldbourne<small>&amp; Co.</small></a>
+      <nav class="label" aria-label="Primary Navigation">
+        <a href="#tumblers">Tumblers</a>
+        <a href="#caps">Caps</a>
+        <a href="#backpacks">Backpacks</a>
+        <a href="#shoes">Footwear</a>
+        <a href="#pair-promo">The Pair Option</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- 3. Hero Carousel (Full Screen Height) -->
+<section class="hero-carousel" id="heroCarousel" aria-label="Featured Collections Carousel">
+  <div class="hero-carousel__slides">
+    <!-- Slide 1: 40 oz Tumblers -->
+    <div class="hero-carousel__slide is-active" data-index="0">
+      <div class="hero-carousel__bg" style="background-image: url('assets/images/hero_tumblers.jpg');"></div>
+      <div class="hero-carousel__overlay" aria-hidden="true"></div>
+      <div class="hero-carousel__container">
+        <div class="hero-carousel__content">
+          <h1 class="hero-carousel__title"><span class="gold-foil-text">Gilded</span> on Every Side.</h1>
+          <p class="hero-carousel__subtitle">Double-wall surgical SUS 304 steel enveloped in continuous 360° gothic relief filigree. 24 hours of ice retention, built on absolute stillness.</p>
+          <div class="hero-carousel__actions">
+            <a class="btn" href="#tumblers">Explore Tumblers Collection ↓</a>
+            <a class="btn btn--ghost" href="#pair-promo">The Pair Option ✦</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Structured Vintage Caps -->
+    <div class="hero-carousel__slide" data-index="1">
+      <div class="hero-carousel__bg" style="background-image: url('assets/images/hero_caps.jpg');"></div>
+      <div class="hero-carousel__overlay" aria-hidden="true"></div>
+      <div class="hero-carousel__container">
+        <div class="hero-carousel__content">
+          <h2 class="hero-carousel__title">Imperial <span class="gold-foil-text">Crown Embroidery.</span></h2>
+          <p class="hero-carousel__subtitle">High-crown vintage profile tailored with raised metallic gold bullion thread, architectural buckram structure, and numbered sweatband stamps.</p>
+          <div class="hero-carousel__actions">
+            <a class="btn" href="#caps">Explore Caps Collection ↓</a>
+            <a class="btn btn--ghost" href="#tumblers">Browse Tumblers ✦</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Gilded Heritage Backpacks -->
+    <div class="hero-carousel__slide" data-index="2">
+      <div class="hero-carousel__bg" style="background-image: url('assets/images/hero_backpacks.jpg');"></div>
+      <div class="hero-carousel__overlay" aria-hidden="true"></div>
+      <div class="hero-carousel__container">
+        <div class="hero-carousel__content">
+          <h2 class="hero-carousel__title">Heraldic Crest in <span class="gold-foil-text">Full Grain.</span></h2>
+          <p class="hero-carousel__subtitle">Deeply embossed heraldic shields crafted into obsidian full-grain leather with heavy-gauge gold-finish hardware and dedicated vault pockets.</p>
+          <div class="hero-carousel__actions">
+            <a class="btn" href="#backpacks">Explore Backpacks Collection ↓</a>
+            <a class="btn btn--ghost" href="#pair-promo">The Pair Option ✦</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Heritage Runners -->
+    <div class="hero-carousel__slide" data-index="3">
+      <div class="hero-carousel__bg" style="background-image: url('assets/images/hero_shoes.jpg');"></div>
+      <div class="hero-carousel__overlay" aria-hidden="true"></div>
+      <div class="hero-carousel__container">
+        <div class="hero-carousel__content">
+          <h2 class="hero-carousel__title">Crest &amp; Laurel <span class="gold-foil-text">Artisan Runners.</span></h2>
+          <p class="hero-carousel__subtitle">Handcrafted low-top silhouette featuring embroidered gold laurel leaves, croc-textured overlays, and sculpted cushioned athletic soles.</p>
+          <div class="hero-carousel__actions">
+            <a class="btn" href="#shoes">Explore Footwear Collection ↓</a>
+            <a class="btn btn--ghost" href="#pair-promo">The Pair Option ✦</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carousel Navigation Dots -->
+  <div class="hero-carousel__dots" role="tablist" aria-label="Slide navigation">
+    <button class="hero-carousel__dot is-active" type="button" role="tab" aria-selected="true" aria-label="Slide 1: Tumblers"></button>
+    <button class="hero-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Slide 2: Caps"></button>
+    <button class="hero-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Slide 3: Backpacks"></button>
+    <button class="hero-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Slide 4: Footwear"></button>
+  </div>
+</section>
+
+<div class="wrap">
+  <!-- Ornamental Gold Divider -->
+  <div class="gold-divider" aria-hidden="true">✦ ─── ❖ ─── ✦</div>
+
+  <!-- 4. Section 1: 40 oz Tumblers (12 Items) -->
+  <section class="section" id="tumblers">
+    <div class="section-head">
+      <div class="section-eyebrow"><span class="gem">✦</span> Discipline I · 40 oz Tumblers</div>
+      <h2 class="section-title">The Gilded <span class="gold-foil-text">Vessels</span></h2>
+      <p class="section-desc">Continuous 360° tactile relief cast over double-wall SUS 304 stainless steel. Twelve signature seasonal and archival releases.</p>
+    </div>
+    <div class="grid" id="tumblerGrid"></div>
+  </section>
+
+  <!-- Ornamental Gold Divider -->
+  <div class="gold-divider" aria-hidden="true">✦ ─── ❖ ─── ✦</div>
+
+  <!-- 5. Promo Section 1: The Collector's Pair Option -->
+  <section class="promo-banner" id="pair-promo" aria-label="The Collector's Pair Option Promo">
+    <div class="promo-banner__bg" style="background-image: url('assets/images/promo_pair.jpg');"></div>
+    <div class="promo-banner__overlay" aria-hidden="true"></div>
+    <div class="promo-banner__inner">
+      <div class="promo-banner-grid">
+        <div>
+          <div class="section-eyebrow"><span class="gem">✦</span> Archival Dual Allocation</div>
+          <h2 class="section-title">The Collector's <span class="gold-foil-text">Pair Option</span></h2>
+          <p class="section-desc">Acquire any two 40 oz Gilded Tumblers — twin editions or distinct releases — and unlock the paired allocation at $89.95 (save $9.95). Each vessel arrives sealed in archival packaging with complimentary express transit.</p>
+          
+          <div class="promo-price-row">
+            <span class="promo-price">$89.95</span>
+            <span class="promo-was">$99.90</span>
+            <span class="promo-badge">Save $9.95 + Free Express Transit</span>
+          </div>
+
+          <ul class="promo-perks">
+            <li><span class="gem">✦</span> Valid Across All 40 oz Gilded Tumbler Releases</li>
+            <li><span class="gem">✦</span> Includes 2× Custom Stainless Steel Reusable Straws</li>
+            <li><span class="gem">✦</span> Archival Presentation Vault Box with Silk Pull Tab</li>
+            <li><span class="gem">✦</span> Complimentary Insured Express Domestic Shipping ($75+ Threshold)</li>
+            <li><span class="gem">✦</span> Guaranteed Arrival Before Halloween for Orders by Oct 9</li>
+          </ul>
+
+          <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+            <a class="btn" href="#tumblers">Explore Tumblers to Pair ↓</a>
+            <button class="btn btn--ghost js-pair-btn" type="button">Acquire Any 2 Vessels — $89.95 ✦</button>
+          </div>
+        </div>
+
+        <div class="promo-duo-preview">
+          <div class="promo-duo-item">
+            <img src="/products/40oz%20Tumbler/Halloween/Halloween-General/TUM-20260923-XI-001/01.webp" alt="Any First Tumbler" loading="lazy" width="220" height="220">
+            <span class="promo-duo-tag">1st Vessel (Any)</span>
+          </div>
+          <span class="promo-duo-plus" aria-hidden="true">+</span>
+          <div class="promo-duo-item">
+            <img src="/products/40oz%20Tumbler/Halloween/Halloween-General/TUM-20260923-XI-004/01.webp" alt="Any Second Tumbler" loading="lazy" width="220" height="220">
+            <span class="promo-duo-tag">2nd Vessel (Any)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ornamental Gold Divider -->
+  <div class="gold-divider" aria-hidden="true">✦ ─── ❖ ─── ✦</div>
+
+  <!-- 6. Section 2: Structured Vintage Caps (11 Items) -->
+  <section class="section" id="caps">
+    <div class="section-head">
+      <div class="section-eyebrow"><span class="gem">✦</span> Discipline II · High-Crown Caps</div>
+      <h2 class="section-title">Structured <span class="gold-foil-text">Vintage Headwear</span></h2>
+      <p class="section-desc">Vintage high-crown profile tailored with raised metallic gold bullion embroidery, reinforced buckram crowns, and custom sweatband stamps.</p>
+    </div>
+    <div class="grid" id="capGrid"></div>
+  </section>
+
+  <!-- Ornamental Gold Divider -->
+  <div class="gold-divider" aria-hidden="true">✦ ─── ❖ ─── ✦</div>
+
+  <!-- 7. Section 3: Gilded Heritage Backpacks (8 Items) -->
+  <section class="section" id="backpacks">
+    <div class="section-head">
+      <div class="section-eyebrow"><span class="gem">✦</span> Discipline III · Leather Carriers</div>
+      <h2 class="section-title">Gilded <span class="gold-foil-text">Heraldic Backpacks</span></h2>
+      <p class="section-desc">Full-grain obsidian leather featuring deep embossed heraldic shields and custom heavy-gauge gold-finish hardware.</p>
+    </div>
+    <div class="grid" id="backpackGrid"></div>
+  </section>
+
+  <!-- Ornamental Gold Divider -->
+  <div class="gold-divider" aria-hidden="true">✦ ─── ❖ ─── ✦</div>
+
+  <!-- 8. Promo Section 2: Archival Vault Guarantee & Ledger -->
+  <section class="promo-banner" id="vault-promo" aria-label="Archival Vault Guarantee">
+    <div class="promo-banner__bg" style="background-image: url('assets/images/promo_vault.jpg');"></div>
+    <div class="promo-banner__overlay" aria-hidden="true"></div>
+    <div class="promo-banner__inner">
+      <div class="section-eyebrow"><span class="gem">✦</span> The Heirloom Guarantee &amp; Private Registry</div>
+      <h2 class="section-title">Certified Numbered Editions &amp; <span class="gold-foil-text">Vault Transit</span></h2>
+      <p class="section-desc">Every piece is individually catalogued into the permanent Goldbourne archive. Shipped in custom laser-cut high-density foam with an embossed wax-sealed certificate of release.</p>
+
+      <div class="promo-vault-perks-grid">
+        <div class="promo-vault-card">
+          <div class="promo-vault-card__title">✦ Oct 9 Cutoff</div>
+          <p class="promo-vault-card__desc">All seasonal orders placed before midnight Oct 9 guaranteed to arrive before Halloween.</p>
+        </div>
+        <div class="promo-vault-card">
+          <div class="promo-vault-card__title">✦ Wax-Sealed Certificate</div>
+          <p class="promo-vault-card__desc">Hand-numbered certificate matching laser engraving on each product's base rim.</p>
+        </div>
+        <div class="promo-vault-card">
+          <div class="promo-vault-card__title">✦ Complimentary Transit</div>
+          <p class="promo-vault-card__desc">Automatic express insured domestic shipping on all collector orders exceeding $75.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: var(--space-4); max-width: 460px;">
+        <span class="card__meta" style="color: var(--accent);">Enroll in The Collector's Ledger for Private Allocations:</span>
+        <form class="newsletter-form js-newsletter-form" style="margin-top: var(--space-2);">
+          <input type="email" placeholder="Enter your patron email…" required aria-label="Email address for Collector's Ledger">
+          <button class="btn" type="submit">Inscribe</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ornamental Gold Divider -->
+  <div class="gold-divider" aria-hidden="true">✦ ─── ❖ ─── ✦</div>
+
+  <!-- 9. Section 4: Heritage Athletic Runners (3 Items) -->
+  <section class="section" id="shoes">
+    <div class="section-head section-head--center">
+      <div class="section-eyebrow"><span class="gem">✦</span> Discipline IV · Artisan Footwear</div>
+      <h2 class="section-title">Heritage <span class="gold-foil-text">Athletic Runners</span></h2>
+      <p class="section-desc">Handcrafted low-top silhouette featuring embroidered gold laurel leaves, croc-textured overlays, and cushioned athletic soles.</p>
+    </div>
+    <div class="grid grid--shoes" id="shoesGrid"></div>
+  </section>
+
+  <!-- Ornamental Gold Divider -->
+  <div class="gold-divider" aria-hidden="true">✦ ─── ❖ ─── ✦</div>
+
+  <!-- 10. Collector Reflections / Reviews -->
+  <section class="section" id="reviews">
+    <div class="section-head section-head--center">
+      <div class="section-eyebrow"><span class="gem">✦</span> Verified Registry</div>
+      <h2 class="section-title">Collector <span class="gold-foil-text">Reflections</span></h2>
+      <p class="section-desc">Excerpts from patrons holding an Edition in their hands.</p>
+    </div>
+
+    <div class="reviews-carousel" id="reviewsCarousel" aria-label="Collector Reviews Carousel">
+      <!-- Navigation Arrows -->
+      <button class="reviews-carousel__btn reviews-carousel__btn--prev js-reviews-prev" type="button" aria-label="Previous review">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button class="reviews-carousel__btn reviews-carousel__btn--next js-reviews-next" type="button" aria-label="Next review">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+
+      <div class="reviews-carousel__viewport">
+        <div class="reviews-carousel__track">
+          <!-- Item 1 -->
+          <article class="review-card" data-index="0">
+            <div>
+              <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote>“The tactile depth of the gold relief is extraordinary. It feels like holding an artifact from an 18th-century cathedral, yet keeps ice frozen through the hottest afternoon.”</blockquote>
+            </div>
+            <div class="review-author">
+              <span>V. Hawthorne, Chicago</span>
+              <span class="gold-foil-text">Lunar Ornament</span>
+            </div>
+          </article>
+
+          <!-- Item 2 -->
+          <article class="review-card" data-index="1">
+            <div>
+              <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote>“Acquired The Pair option for my studio desk and home office. The weight balance in the ergonomic handle makes carrying a 40 oz vessel completely effortless.”</blockquote>
+            </div>
+            <div class="review-author">
+              <span>M. Rousseau, Austin</span>
+              <span class="gold-foil-text">The Pair Option</span>
+            </div>
+          </article>
+
+          <!-- Item 3 -->
+          <article class="review-card" data-index="2">
+            <div>
+              <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote>“The contrast between the deep obsidian ground and the gilded crest is breathtaking in natural sunlight. It is an artwork first and an heirloom carrier second.”</blockquote>
+            </div>
+            <div class="review-author">
+              <span>D. Sterling, Philadelphia</span>
+              <span class="gold-foil-text">Vegas Noir Backpack</span>
+            </div>
+          </article>
+
+          <!-- Item 4 -->
+          <article class="review-card" data-index="3">
+            <div>
+              <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote>“The 360° continuous filigree has no seam whatever. The double-wall insulation performed flawlessly during a 14-hour train ride with zero condensation.”</blockquote>
+            </div>
+            <div class="review-author">
+              <span>Elena Vance, Boston</span>
+              <span class="gold-foil-text">Beauty In The End</span>
+            </div>
+          </article>
+
+          <!-- Item 5 -->
+          <article class="review-card" data-index="4">
+            <div>
+              <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote>“The gold bullion leaf embroidery across the heel and quarter panel is museum-grade. Incredibly comfortable cushioned sole for city walking.”</blockquote>
+            </div>
+            <div class="review-author">
+              <span>Julian C., San Francisco</span>
+              <span class="gold-foil-text">Artisan Runners</span>
+            </div>
+          </article>
+
+          <!-- Item 6 -->
+          <article class="review-card" data-index="5">
+            <div>
+              <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote>“The raised metallic bullion thread on the crown buckram is astonishingly crisp. The numbered leather sweatband stamp makes it feel truly bespoke.”</blockquote>
+            </div>
+            <div class="review-author">
+              <span>Marcus Ward, Seattle</span>
+              <span class="gold-foil-text">Vintage Gilded Cap</span>
+            </div>
+          </article>
+
+          <!-- Item 7 -->
+          <article class="review-card" data-index="6">
+            <div>
+              <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote>“Substantial weight, impeccable thermal retention, and a hand-feel unlike any ordinary vessel. Visitors never fail to comment on its sculptural presence.”</blockquote>
+            </div>
+            <div class="review-author">
+              <span>A. Montgomery, London</span>
+              <span class="gold-foil-text">Coiled Ornament</span>
+            </div>
+          </article>
+
+          <!-- Item 8 -->
+          <article class="review-card" data-index="7">
+            <div>
+              <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote>“The sapphire-navy ground paired with warm gold filigree feels like private jewel craft. The straw fit and sealed lid are engineered to perfection.”</blockquote>
+            </div>
+            <div class="review-author">
+              <span>R. Blackwood, New York</span>
+              <span class="gold-foil-text">Midnight Holiday Edition</span>
+            </div>
+          </article>
+
+          <!-- Item 9 -->
+          <article class="review-card" data-index="8">
+            <div>
+              <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote>“Full-grain leather with that distinct rich aroma, heavy gold hardware, and dedicated plush vaults. It elevates every journey to an occasion.”</blockquote>
+            </div>
+            <div class="review-author">
+              <span>Clara Fontaine, Montreal</span>
+              <span class="gold-foil-text">Heraldic Vault Backpack</span>
+            </div>
+          </article>
+
+          <!-- Item 10 -->
+          <article class="review-card" data-index="9">
+            <div>
+              <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote>“The crimson and gold relief catches every ray of dawn light. This is functional sculpture created for those who refuse compromise on aesthetic depth.”</blockquote>
+            </div>
+            <div class="review-author">
+              <span>S. Kensington, Denver</span>
+              <span class="gold-foil-text">Blood, Beauty, Forever</span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Carousel Navigation Dots -->
+      <div class="reviews-carousel__dots" role="tablist" aria-label="Review slide navigation">
+        <button class="reviews-carousel__dot is-active" type="button" role="tab" aria-selected="true" aria-label="Review 1"></button>
+        <button class="reviews-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Review 2"></button>
+        <button class="reviews-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Review 3"></button>
+        <button class="reviews-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Review 4"></button>
+        <button class="reviews-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Review 5"></button>
+        <button class="reviews-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Review 6"></button>
+        <button class="reviews-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Review 7"></button>
+        <button class="reviews-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Review 8"></button>
+        <button class="reviews-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Review 9"></button>
+        <button class="reviews-carousel__dot" type="button" role="tab" aria-selected="false" aria-label="Review 10"></button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 11. 4-Column Parchment Footer -->
+<footer class="parchment site-footer">
+  <div class="wrap">
+    <div class="site-footer__cols">
+      <!-- Col 1: Shop Direct -->
+      <div class="site-footer__col">
+        <h3>The Disciplines</h3>
+        <ul class="site-footer__links">
+          <li><a href="#tumblers">40 oz Gilded Tumblers</a></li>
+          <li><a href="#caps">Structured Vintage Caps</a></li>
+          <li><a href="#backpacks">Gilded Heraldic Backpacks</a></li>
+          <li><a href="#shoes">Heritage Athletic Runners</a></li>
+          <li><a href="#pair-promo">The Pair Option (Buy 2 &amp; Save)</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 2: Brand Ethos -->
+      <div class="site-footer__col">
+        <h3>Goldbourne &amp; Co.</h3>
+        <p class="muted" style="font-size: 0.875rem; line-height: 1.6; margin: 0 0 var(--space-3);">
+          Gilded on every side. Heirloom carriers released in numbered seasonal drops. A composition built on stillness.
+        </p>
+        <div style="font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--p-accent);">
+          ✦ London · New York · Kyoto
+        </div>
+      </div>
+
+      <!-- Col 3: Collector Services -->
+      <div class="site-footer__col">
+        <h3>Collector Services</h3>
+        <ul class="site-footer__links">
+          <li><a href="#vault-promo">Archival Vault Packaging</a></li>
+          <li><a href="#vault-promo">Oct 9 Halloween Cutoff</a></li>
+          <li><a href="#vault-promo">Complimentary Express Transit</a></li>
+          <li><a href="#reviews">Patron Registry</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Newsletter -->
+      <div class="site-footer__col">
+        <h3>The Collector's Ledger</h3>
+        <p class="muted" style="font-size: 0.875rem; line-height: 1.5; margin: 0 0 var(--space-2);">
+          Receive private dispatches when new numbered Editions are unlocked.
+        </p>
+        <form class="newsletter-form js-newsletter-form">
+          <input type="email" placeholder="Your patron email" required aria-label="Patron email for newsletter">
+          <button class="btn" type="submit">Inscribe</button>
+        </form>
+        <p class="muted" style="font-size: 0.75rem; margin-top: var(--space-2);">Static demo for design review. Purchases are not processed.</p>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="site-footer__bottom">
+      <span>© 2026 Goldbourne &amp; Co. All rights reserved.</span>
+      <span>Designed for collectors who refuse plain sides.</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="assets/main.js"></script>
+</body>
+</html>

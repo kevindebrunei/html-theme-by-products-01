@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.omc/
+**/.omc/
+.superpowers/
+**/.superpowers/
+.DS_Store
+Thumbs.db
+.env
+.env.*
+*.zip
