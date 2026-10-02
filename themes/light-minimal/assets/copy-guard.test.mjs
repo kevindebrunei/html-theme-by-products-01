@@ -59,10 +59,76 @@ test('ghi nhận hiện trạng: 59/65 SKU có tên giải trong đường dẫn
   assert.equal(affected.length, 59, 'Số SKU dính đổi rồi — cập nhật spec §10.1 trước khi sửa số ở đây')
 })
 
-test('không dùng vàng brand #C9A227 ở bất kỳ file nào của theme', () => {
-  assert.equal(/#C9A227/i.test(themeText()), false)
+function themeFiles() {
+  return [
+    ...readdirSync(THEME).filter((f) => f.endsWith('.html')).map((f) => join(THEME, f)),
+    ...readdirSync(ASSETS)
+      .filter((f) => (f.endsWith('.js') || f.endsWith('.mjs') || f.endsWith('.css')) && !f.includes('.test.'))
+      .map((f) => join(ASSETS, f)),
+  ]
+}
+
+/*
+  Vàng đẹp, và cái đẹp sẽ bò dần sang chỗ nó không được phép ở.
+  Hàng rào phải là test chứ không phải trí nhớ (spec §2.4).
+*/
+test('vàng brand xuất hiện đúng một lần trong toàn theme', () => {
+  const hits = themeText().match(/#C9A227/gi) ?? []
+  assert.equal(hits.length, 1, `#C9A227 xuất hiện ${hits.length} lần, phải đúng 1`)
 })
 
-test('không có box-shadow: Minimalism & Swiss quy định shadow none (spec §5.1)', () => {
-  assert.equal(/box-shadow\s*:/i.test(themeText()), false)
+test('mã vàng duy nhất đó nằm trong tokens.css', () => {
+  const tokens = readFileSync(join(ASSETS, 'tokens.css'), 'utf8')
+  assert.match(tokens, /--gold:\s*#C9A227/i)
+})
+
+test('var(--gold) chỉ dùng trong khai báo border', () => {
+  for (const file of themeFiles()) {
+    const lines = readFileSync(file, 'utf8').split('\n')
+    lines.forEach((line, i) => {
+      if (!line.includes('var(--gold)')) return
+      assert.match(
+        line,
+        /border[a-z-]*\s*:/,
+        `${file}:${i + 1} dùng var(--gold) ngoài border — vàng 2.42:1, không đủ cho chữ/nút/trạng thái\n  ${line.trim()}`
+      )
+    })
+  }
+})
+
+test('var(--gold) không nằm trên selector trạng thái', () => {
+  for (const file of themeFiles()) {
+    if (!file.endsWith('.css')) continue
+    const css = readFileSync(file, 'utf8')
+    const blocks = css.split('}')
+    for (const block of blocks) {
+      if (!block.includes('var(--gold)')) continue
+      const selector = block.split('{')[0]
+      assert.doesNotMatch(
+        selector,
+        /:hover|:focus|\.is-active|\[aria-current|\[aria-pressed/,
+        `Selector trạng thái dùng vàng — chỉ báo trạng thái phải dùng --accent:\n  ${selector.trim()}`
+      )
+    }
+  }
+})
+
+/*
+  Shadow được phép từ 02/10/2026, nhưng giá trị thật chỉ sống ở tokens.css.
+  Rải rác box-shadow hardcode là cách một hệ thị giác mất kiểm soát.
+*/
+test('box-shadow ngoài tokens.css phải dùng var(--shadow-*)', () => {
+  for (const file of themeFiles()) {
+    if (file.endsWith('tokens.css')) continue
+    const lines = readFileSync(file, 'utf8').split('\n')
+    lines.forEach((line, i) => {
+      const m = line.match(/box-shadow\s*:\s*(.+)/)
+      if (!m) return
+      assert.match(
+        m[1],
+        /var\(--shadow-/,
+        `${file}:${i + 1} hardcode box-shadow, phải dùng var(--shadow-*)\n  ${line.trim()}`
+      )
+    })
+  }
 })
