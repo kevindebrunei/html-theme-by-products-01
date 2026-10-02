@@ -1385,17 +1385,36 @@ Thêm vào cuối `themes/light-minimal/assets/components.css`:
 .preview + .preview { border-top: 1px solid var(--gold); }
 ```
 
-Xoá khối `/* ---- Thanh facet ---- */` khỏi `components.css` — trang chủ không còn facet. Giữ lại nếu `product.html` có dùng; kiểm bằng `grep -n "facet" themes/light-minimal/product.html themes/light-minimal/assets/product.js` trước khi xoá.
+**GIỮ khối `/* ---- Thanh facet ---- */` trong `components.css`.** Đã kiểm: `product.js:31` dùng class `.facet` cho nút chọn variant. Xoá CSS này sẽ làm vỡ PDP. Chỉ phần **logic JS** bị xoá, không phải CSS.
 
-- [ ] **Step 7: Chạy toàn bộ test**
+- [ ] **Step 7: Xoá ba hàm facet đã chết**
+
+Sau khi `main.js` không còn gọi chúng, ba hàm này không còn nơi sử dụng. `product.js` **không** import chúng (đã kiểm ngày 02/10/2026).
+
+Xoá khỏi `themes/light-minimal/assets/catalog.mjs`: hàm `facetCounts` và `shouldRenderFacets`.
+
+Xoá khỏi `themes/light-minimal/assets/render.mjs`: hàm `facetBarHtml`.
+
+Xoá khỏi `themes/light-minimal/assets/catalog.test.mjs` và `render.test.mjs`: mọi test canh ba hàm trên, và gỡ chúng khỏi dòng `import`.
+
+Đây là **lần duy nhất trong plan được phép xoá test** — vì thứ nó canh không còn tồn tại, không phải vì nó bất tiện. Mọi test khác vỡ là dấu hiệu code sai.
+
+Xác nhận không còn tham chiếu sót:
+
+```bash
+grep -rn "facetCounts\|shouldRenderFacets\|facetBarHtml" themes/light-minimal/
+```
+Expected: không có dòng nào trả về.
+
+- [ ] **Step 8: Chạy toàn bộ test**
 
 Run: `node --test themes/light-minimal/assets/*.test.mjs`
 Expected: PASS toàn bộ.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
-git add themes/light-minimal/index.html themes/light-minimal/product.html themes/light-minimal/assets/main.js themes/light-minimal/assets/components.css themes/light-minimal/assets/markup.test.mjs
+git add themes/light-minimal/index.html themes/light-minimal/product.html themes/light-minimal/assets/main.js themes/light-minimal/assets/components.css themes/light-minimal/assets/markup.test.mjs themes/light-minimal/assets/catalog.mjs themes/light-minimal/assets/catalog.test.mjs themes/light-minimal/assets/render.mjs themes/light-minimal/assets/render.test.mjs
 git commit -m "feat(light-minimal): 4 dải preview, nav neo cuộn, path asset tuyệt đối"
 ```
 
@@ -1580,4 +1599,4 @@ Dừng cả hai server. Báo cáo: số test pass, từng mục Step 3–7 đạ
 
 **Thứ không được đụng:** `catalog.mjs` phần `deriveStyleFamily`, `displayFamily`, `byType`, `priceLabel`, `formatPrice` · `render.mjs` phần `imageAlt`, `galleryHtml`, `sectionsHtml`, `escapeHtml`, `ALT_SUFFIX` · toàn bộ `product.js` · toàn bộ `themes/dark-maximalism`.
 
-**`facetCounts()` và `shouldRenderFacets()` giữ lại** dù trang chủ không còn dùng — chúng có test và `product.html` có thể còn dùng. Test xanh không có nghĩa tính năng còn sống.
+**`facetCounts()`, `shouldRenderFacets()`, `facetBarHtml()` bị xoá ở Task 7 Step 7** cùng test của chúng. Đã kiểm `product.js` không import chúng; nó chỉ dùng lại class CSS `.facet`. **Class CSS giữ nguyên**, chỉ logic JS bị xoá.

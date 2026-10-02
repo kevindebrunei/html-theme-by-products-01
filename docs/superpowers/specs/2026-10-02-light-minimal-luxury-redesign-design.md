@@ -289,7 +289,13 @@ Không còn chế độ full catalog thì `typeNav` không còn gì để lọc.
 
 Hệ quả phải ghi rõ: facet theo họ style là **quyết định nền tảng số 3** của spec 01/10 — nó tồn tại để bịt lỗ hổng IP ở lớp điều hướng mà spec 29/09 còn để lại. Bỏ nó **không** mở lại lỗ hổng đó, vì ta không thay bằng facet theo giải; ta không thay bằng gì cả. Nhưng một tính năng đã thiết kế có lý do thì đang bị gỡ, và đó là mất mát thật.
 
-`facetCounts()` và `shouldRenderFacets()` trong `catalog.mjs` **giữ nguyên, không xoá**: chúng đã có test và `product.html` còn dùng. Ghi nhận chúng không còn được nối dây ở trang chủ.
+**Xoá luôn `facetCounts()`, `shouldRenderFacets()` (`catalog.mjs`) và `facetBarHtml()` (`render.mjs`) cùng test của chúng.**
+
+Bản nháp spec này ban đầu đề nghị giữ, với lý do `product.html` còn dùng. Kiểm lại ngày 02/10/2026 cho thấy lý do đó **sai**: `product.js` import `TYPE_ORDER, TYPE_LABEL, byType, priceLabel, formatPrice, deriveStyleFamily, displayFamily` — không có hàm facet nào. Nó chỉ dùng lại **class CSS** `.facet` cho nút chọn variant (`product.js:31`).
+
+Code có test nhưng không ai gọi là cách một codebase tích trữ ảo tưởng: test xanh khiến người sau tưởng tính năng còn sống. Git giữ lịch sử nếu sau này dựng trang collection và cần lại.
+
+**Class CSS `.facet` và `.facets` thì giữ** — `product.js` đang dùng thật.
 
 ---
 
@@ -351,7 +357,7 @@ Bốn test sẽ vỡ. Cả bốn vỡ **có chủ đích** — chúng đang canh
 - Mọi `href` của `typeNav` và `footerNav` trỏ tới một `id` có thật trên trang. Neo cuộn gãy thì im lặng, không báo lỗi gì — phải có test.
 - Chuỗi `wght@300..700` có mặt trong `base.css`. Thiếu nó thì Variable Font Hover chết lặng, trang vẫn trông bình thường.
 
-**Lưu ý về test facet:** `catalog.test.mjs` canh `facetCounts()` và `shouldRenderFacets()` vẫn xanh vì đó là hàm thuần. Chúng không còn được nối dây ở trang chủ (§7.3). Giữ test, không xoá — nhưng đừng nhầm test xanh là tính năng còn sống.
+**Test facet bị xoá cùng hàm.** Theo §7.3, `facetCounts()`, `shouldRenderFacets()`, `facetBarHtml()` và mọi test canh chúng đều bị xoá. Đây là lần duy nhất trong plan được phép xoá test — vì thứ nó canh không còn tồn tại, không phải vì nó bất tiện.
 
 ---
 
