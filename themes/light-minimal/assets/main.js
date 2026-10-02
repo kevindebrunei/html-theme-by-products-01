@@ -90,14 +90,22 @@ function render() {
   observeReveal(gridEl)
 }
 
+/*
+  Header và footer render cùng một markup (cùng data-type, cùng số đếm) nên
+  phải xử lý click giống hệt nhau — control trông giống nhau thì không được
+  cái bấm được cái không (fix round 1, finding Important).
+*/
+function onTypeNavClick(e) {
+  const a = e.target.closest('a[data-type]')
+  if (!a) return
+  state.type = state.type === a.dataset.type ? null : a.dataset.type
+  state.family = null
+  render()
+}
+
 function wire() {
-  document.getElementById('typeNav')?.addEventListener('click', (e) => {
-    const a = e.target.closest('a[data-type]')
-    if (!a) return
-    state.type = state.type === a.dataset.type ? null : a.dataset.type
-    state.family = null
-    render()
-  })
+  document.getElementById('typeNav')?.addEventListener('click', onTypeNavClick)
+  document.getElementById('footerNav')?.addEventListener('click', onTypeNavClick)
 
   document.getElementById('facets')?.addEventListener('click', (e) => {
     const b = e.target.closest('button[data-family]')
