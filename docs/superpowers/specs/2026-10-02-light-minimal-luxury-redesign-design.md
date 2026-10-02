@@ -29,6 +29,8 @@ Ghi nhận thẳng: sau thay đổi này, tên thư mục `light-minimal` không
 | 2 | Hero là **carousel 3 frame** | §5.6 "hero tĩnh, một ảnh đóng khung" |
 | 3 | Thẻ sản phẩm **đổi sang ảnh 02 khi hover** | không đảo gì — spec 01/10 không nói tới, đây là bổ sung |
 | 4 | Motion dùng **scroll-driven animations** | §5.5 tier Subtle |
+| 5 | Trang chủ chỉ hiện **3 sản phẩm mỗi dòng, tổng 12 SKU tuyển tay**; **không có trang full catalog** | §5.3 "lưới 3 cột chứa 43 tumbler" + §6 facet trong trang |
+| 6 | Port 2 microinteraction từ **Fancy Components** sang vanilla | mới, spec 01/10 không có |
 
 Những gì **không** đổi, và phải chủ động giữ:
 
@@ -36,7 +38,7 @@ Những gì **không** đổi, và phải chủ động giữ:
 - Viền ảnh `1px solid #8A7C62`. Lý do ở §3.3 — nó mạnh hơn trên nền trắng chứ không yếu đi.
 - Toàn bộ ranh giới IP: không tên giải ở nav/URL/alt/meta, không motif `EST.` ở lớp brand, màu đội chỉ sống trong ảnh.
 - Bộ chặn copy §8.5 spec 29/09. **Không nới một cụm nào.**
-- Facet theo họ style, không theo giải. Logic `catalog.mjs` giữ nguyên hoàn toàn.
+- Logic phân loại trong `catalog.mjs` giữ nguyên hoàn toàn: `deriveStyleFamily`, `displayFamily`, `byType`, `priceLabel`. Riêng **thanh facet bị gỡ khỏi trang chủ** theo quyết định 5 — xem §7.3 về cái mất và vì sao nó không mở lại lỗ hổng IP.
 - Giọng catalogue trong 65 `Body (HTML)`. Theme không viết đè.
 
 ---
@@ -186,14 +188,20 @@ Focus-within là bắt buộc, không chỉ hover: thẻ là link, người dùn
 
 ### 5.2 Gate kiểm duyệt — chặn, không phải khuyến nghị
 
-Ảnh `02` của 65 SKU **chưa ai soi**. Trước khi bật tính năng này phải soi đủ 65 ảnh tìm `AURA TUMBLER`.
+Quyết định "trang chủ chỉ 12 SKU" (§7.2) làm gate này **co từ 130 ảnh xuống 24** — 12 ảnh `01` cộng 12 ảnh `02`. Đó là lượng soi hết được bằng mắt trong một lượt, nên tiêu chuẩn ở đây **cao hơn** mức "giảm thiểu rủi ro": mọi ảnh xuất hiện trên trang chủ đều đã được kiểm.
 
-- SKU nào dính → **tắt swap riêng cho thẻ đó**, thẻ giữ một ảnh. Không xoá ảnh.
+Soi tìm **hai** thứ trong cùng một lượt:
 
-**Cờ đó để ở đâu — quan trọng.** `products/products.json` **là file sinh ra** bởi `scripts/build-products.mjs` từ CSV Shopify. Sửa tay vào đó sẽ bị ghi đè ở lần build kế tiếp và không ai nhận ra. Cờ phải nằm trong mã theme: một hằng số dạng `Set` các SKU bị loại, đặt trong `assets/catalog.mjs`, kèm chú thích ngày soi. Nó là kết quả kiểm duyệt của theme, không phải dữ liệu sản phẩm — để đúng chỗ thì test canh được và rebuild không xoá mất.
-- Nếu tỉ lệ dính cao như mẫu hero (3/6), tính năng này mất phần lớn giá trị — lúc đó phải báo lại trước khi làm tiếp, không âm thầm bật cho số còn lại.
+- watermark `AURA TUMBLER` (gap §8.1 spec 01/10)
+- logo đăng ký, tên đội đầy đủ, banner hay cờ ở hậu cảnh (gap §8.2 spec 01/10)
 
-Kết quả soi phải ghi vào spec này, không để trong đầu người làm.
+**Ảnh bẩn thì đổi SKU, không phải tắt tính năng.** Vì danh sách là tuyển tay, SKU nào có ảnh `01` hoặc `02` dính thì loại khỏi danh sách và chọn SKU khác trong cùng dòng. Đây là tiêu chí loại số 1 ở §7.2.
+
+**Lối thoát khi một dòng không đủ 3 SKU sạch cả đôi:** chấp nhận SKU có `01` sạch nhưng `02` dính, và **tắt swap riêng cho thẻ đó**. Không xoá ảnh.
+
+**Cờ đó để ở đâu — quan trọng.** `products/products.json` **là file sinh ra** bởi `scripts/build-products.mjs` từ CSV Shopify. Sửa tay vào đó sẽ bị ghi đè ở lần build kế tiếp và không ai nhận ra. Cờ phải nằm trong mã theme: một hằng số dạng `Set` các SKU bị loại, đặt trong `assets/catalog.mjs` cạnh danh sách 12 SKU, kèm chú thích ngày soi.
+
+Kết quả soi — cả 24 ảnh, đạt hay không đạt, lý do loại — phải ghi vào spec này, không để trong đầu người làm.
 
 ---
 
@@ -252,12 +260,60 @@ Parallax. Spec 01/10 §5.5 đã bác và lý do vẫn đứng: nó phá sự tĩ
 1. **Announcement** — 2 tin luân phiên, giữ nguyên logic cutoff. Viền dưới đổi sang hairline `--gold`.
 2. **Header** — wordmark `--accent`, 4 dòng sản phẩm, sticky, co khi cuộn.
 3. **Hero carousel** — §4.
-4. **Lưới sản phẩm có facet** — logic `catalog.mjs` nguyên vẹn, thị giác mới theo §3.1.
+4. **Bốn dải preview** — Tumblers · Caps · Backpacks · Shoes, mỗi dải **3 sản phẩm**.
 5. **Footer** — giữ nguyên.
 
 **Không** có editorial band, **không** có mosaic — đã cân nhắc và loại ở brainstorm.
 
 **Không** render `What you're actually holding` và `The Pair`. Hai khối này chặn bởi gap §8.3 spec 01/10 (thiếu `Product Details`, `Care` cho 43 tumbler) và chưa mục nào được lấp. Dựng khối rỗng chỉ để trang dài hơn là tự lừa mình.
+
+### 7.1 Vì sao 3 chứ không phải 4
+
+Lưới desktop là 3 cột. Bốn sản phẩm thành 3 cộng 1 lẻ ở hàng hai — xấu ở đúng breakpoint quan trọng nhất. Ba là tròn một hàng ở `≥1280px`, và xuống 2 rồi 1 cột vẫn chia hết. Nếu sau này muốn 4 thì phải đổi preview sang dải cuộn ngang, không dùng lưới được nữa.
+
+### 7.2 Danh sách 12 SKU là tài sản, không phải mặc định
+
+Trang chủ không còn chế độ full, nên **12 SKU này là toàn bộ cửa hàng**. Lấy 3 cái đầu theo thứ tự catalog là phó mặc gian hàng cho thứ tự file CSV.
+
+Dùng **danh sách tuyển tay**, đặt trong `assets/catalog.mjs` cùng chỗ với cờ watermark (§5.2), kèm ngày tuyển và lý do chọn từng SKU. Tiêu chí, theo thứ tự ưu tiên:
+
+1. Ảnh `01` và `02` **sạch watermark `AURA TUMBLER` và sạch logo/tên đội** — đây là tiêu chí loại, không phải tiêu chí cộng điểm.
+2. Phủ được cả hai họ style trong dòng Tumbler (Gothic Jewel và Holiday Ornament), để trang chủ không trông như chỉ bán đồ Halloween.
+3. Màu không đụng nhau trong cùng một dải.
+
+### 7.3 Nav thành neo cuộn, facet biến mất
+
+Không còn chế độ full catalog thì `typeNav` không còn gì để lọc. Nó chuyển thành **neo cuộn** tới 4 dải preview. `footerNav` render cùng markup nên hành xử y hệt — giữ đúng nguyên tắc "control trông giống nhau thì không được cái bấm được cái không" đã ghi trong `main.js`.
+
+**Thanh facet bỏ khỏi trang chủ.** Ba sản phẩm một dải thì không có gì để lọc.
+
+Hệ quả phải ghi rõ: facet theo họ style là **quyết định nền tảng số 3** của spec 01/10 — nó tồn tại để bịt lỗ hổng IP ở lớp điều hướng mà spec 29/09 còn để lại. Bỏ nó **không** mở lại lỗ hổng đó, vì ta không thay bằng facet theo giải; ta không thay bằng gì cả. Nhưng một tính năng đã thiết kế có lý do thì đang bị gỡ, và đó là mất mát thật.
+
+`facetCounts()` và `shouldRenderFacets()` trong `catalog.mjs` **giữ nguyên, không xoá**: chúng đã có test và `product.html` còn dùng. Ghi nhận chúng không còn được nối dây ở trang chủ.
+
+---
+
+## 7.5 Microinteraction port từ Fancy Components
+
+[Fancy Components](https://www.fancycomponents.dev/) là thư viện **React + TypeScript + Tailwind + Motion**, cài qua shadcn CLI, một số component còn kéo `matter-js` / `lodash` / `poly-decomp`. Theme này là HTML/CSS/JS thuần, không build step — **không cài được, không copy-paste được**.
+
+Giấy phép MIT cho phép chép lại ý tưởng. Port đúng **hai** cái, viết lại bằng vanilla, có ghi nguồn trong comment:
+
+| Port | Vì sao chọn | Chi phí |
+|---|---|---|
+| **Variable Font Hover** | Cormorant Garamond là variable font trục 300–700 — asset đã có sẵn. Nav và wordmark đổi weight khi rê chuột | CSS thuần, 0 JS, 0 KB |
+| **Vertical Cut Reveal** | H1 serif cắt dòng hiện lên; đúng chất editorial của một nhà đấu giá | CSS + ~15 dòng JS tách dòng |
+
+**Phải sửa kèm:** `base.css` đang nạp `css2?family=Cormorant+Garamond:wght@400;600` — đó là **hai weight tĩnh, không phải variable font**. Variable Font Hover không chạy được trên nó. Đổi sang `wght@300..700`.
+
+**Loại, và lý do:**
+
+- **Image Trail** — rải ảnh sản phẩm theo con trỏ. Đưa ảnh chưa kiểm duyệt khắp màn hình ở vị trí không kiểm soát được, hỏng cả ranh giới IP lẫn giọng catalogue tĩnh.
+- **Gravity**, **Cursor Attractor** — cần `matter-js`. Phá zero-dependency vì một hiệu ứng sai chất.
+- **Gooey**, **Pixelate**, **Scramble Hover**, **Typewriter** — ngôn ngữ của trang tech, không phải nhà đấu giá.
+- **Carousel** của họ — ta tự dựng với ràng buộc a11y §4.3 chặt hơn.
+
+**Ràng buộc a11y cho Vertical Cut Reveal:** tách chữ thành `<span>` làm hỏng screen reader nếu làm ẩu. Bọc ngoài phải có `aria-label` mang nguyên câu, các `<span>` con `aria-hidden="true"`. Và nó chịu chung luật §6.2.1 — **mặc định là hiện**, hiệu ứng chỉ bật trong nhánh `@supports` + `prefers-reduced-motion: no-preference`.
 
 ---
 
@@ -291,6 +347,11 @@ Bốn test sẽ vỡ. Cả bốn vỡ **có chủ đích** — chúng đang canh
 - Carousel có nút tạm dừng và nút đó là `<button>`.
 - `.reveal` mặc định `opacity: 1` — canh đúng luật §6.2.1, chặn tái diễn lỗi nội dung ẩn.
 - `var(--gold)` không xuất hiện trên selector trạng thái.
+- Danh sách tuyển tay có **đúng 12 SKU, đúng 3 mỗi dòng sản phẩm**, và mọi SKU đều tồn tại trong `products.json`. Test này bắt lỗi gõ sai SKU và lỗi sót khi sửa danh sách — danh sách tuyển tay là chỗ duy nhất trong theme mà một lỗi chính tả làm mất hẳn một sản phẩm khỏi cửa hàng.
+- Mọi `href` của `typeNav` và `footerNav` trỏ tới một `id` có thật trên trang. Neo cuộn gãy thì im lặng, không báo lỗi gì — phải có test.
+- Chuỗi `wght@300..700` có mặt trong `base.css`. Thiếu nó thì Variable Font Hover chết lặng, trang vẫn trông bình thường.
+
+**Lưu ý về test facet:** `catalog.test.mjs` canh `facetCounts()` và `shouldRenderFacets()` vẫn xanh vì đó là hàm thuần. Chúng không còn được nối dây ở trang chủ (§7.3). Giữ test, không xoá — nhưng đừng nhầm test xanh là tính năng còn sống.
 
 ---
 
@@ -298,9 +359,13 @@ Bốn test sẽ vỡ. Cả bốn vỡ **có chủ đích** — chúng đang canh
 
 ### 10.1 Mới, sinh ra từ thiết kế này
 
+**53 SKU không có đường duyệt trong site — rủi ro đã chấp nhận.** Trang chủ hiện 12 SKU và theme không có trang collection, nên 53 SKU còn lại chỉ tới được bằng URL trực tiếp tới `product.html?sku=...`. Phương án nav-mở-full-tại-chỗ và phương án trang collection riêng đều đã được trình bày kèm đánh đổi; chủ store chọn phương án này ngày 02/10/2026. Ghi lại để sau này không ai tưởng đây là sơ suất.
+
+Hệ quả kéo theo, cần biết trước khi mở bán: 53 SKU đó không có đường nội bộ nào trỏ tới, nên công cụ tìm kiếm khó khám phá ra chúng. Spec 29/09 đặt cược vào `SEO Title` mang tên đội đầy đủ để truy vấn kiểu "Cowboys tumbler" đáp thẳng xuống PDP — cược đó giờ là **đường duy nhất** tới 53 SKU, không còn là đường dự phòng. Và gap §8.3 mục 2 ghi `SEO Description` đang trống 100%.
+
 **Pool hero chỉ 3 frame, không dư.** Một frame nữa bị loại vì lý do gì đó thì carousel còn 2, mỏng tới mức khó gọi là carousel. Không có nguồn thay thế trong vùng sạch IP.
 
-**Ảnh 02 chưa soi.** §5.2 đã đặt gate chặn. Rủi ro là tính năng hover-swap chết sau khi soi xong — chấp nhận được vì gate chặn trước khi code chạy ra production, không phải sau.
+**Danh sách 12 SKU là điểm đơn lẻ dễ hỏng.** Nó vừa là gian hàng, vừa là kết quả kiểm duyệt IP. Sửa ẩu một dòng trong đó là vừa đổi mặt tiền vừa có thể đưa ảnh chưa soi lên trang. Test §9 canh số lượng và sự tồn tại của SKU, nhưng **không** canh được ảnh có sạch hay không — cái đó chỉ mắt người làm được.
 
 **Tên thư mục `light-minimal` không còn mô tả nội dung.** Nợ kỹ thuật đã biết, chủ store chọn có ý thức.
 
@@ -308,16 +373,25 @@ Bốn test sẽ vỡ. Cả bốn vỡ **có chủ đích** — chúng đang canh
 
 ### 10.2 Kế thừa, chưa mục nào được lấp
 
-Toàn bộ §8.1, §8.2, §8.3, §8.4 của spec 01/10 giữ nguyên hiệu lực. Riêng §8.1 vừa được lấp một phần bởi §4.1 ở trên — 6/324 ảnh đã soi. Còn 318 ảnh.
+Toàn bộ §8.1, §8.2, §8.3, §8.4 của spec 01/10 giữ nguyên hiệu lực **ở cấp store**. Hai gap đầu đang được lấp dần ở cấp trang chủ:
 
-Nhấn lại §8.2 vì redesign này làm nó **nặng thêm**: hover-swap đưa thêm tối đa 65 ảnh lên trang chủ, mỗi ảnh là một khả năng lộ logo đội hoặc tên đội đầy đủ ở hậu cảnh. Gate §5.2 soi watermark `AURA TUMBLER`; nó **không** soi logo đội. Phải soi cả hai trong cùng một lượt.
+- §4.1 đã soi 6 ảnh hero.
+- §5.2 sẽ soi thêm 24 ảnh của 12 SKU tuyển tay.
+
+Tổng cộng 30 ảnh sau khi làm xong. Còn **294 ảnh chưa ai nhìn** — chúng vẫn sống ở `product.html`, nơi gallery render đủ 5 ảnh của SKU bất kỳ. Trang chủ sạch không làm store sạch.
+
+Khác với dự đoán ban đầu, redesign này **giảm** phơi nhiễm §8.2 ở trang chủ chứ không tăng: bản hiện tại đổ 65 ảnh `01` chưa soi lên lưới, bản mới chỉ hiện 24 ảnh đã soi cả watermark lẫn logo đội. Đó là tác dụng phụ ngoài ý muốn của quyết định "chỉ 12 SKU", và là lý do mạnh nhất bênh cho quyết định đó.
 
 ---
 
 ## 11. Checklist trước khi gọi là xong
 
-- [ ] Soi đủ 65 ảnh `02`, tìm **cả** `AURA TUMBLER` **và** logo/tên đội; ghi kết quả vào §5.2
-- [ ] SKU dính → tắt swap riêng thẻ đó, không xoá ảnh
+- [ ] Soi đủ 24 ảnh (`01` + `02` của 12 SKU tuyển tay), tìm **cả** `AURA TUMBLER` **và** logo/tên đội; ghi kết quả vào §5.2
+- [ ] SKU có ảnh dính → đổi sang SKU khác cùng dòng; chỉ dùng lối thoát tắt-swap khi dòng đó không đủ 3 SKU sạch
+- [ ] Danh sách 12 SKU: đúng 3 mỗi dòng, phủ cả Gothic Jewel lẫn Holiday Ornament ở dòng Tumbler, màu không đụng nhau trong một dải
+- [ ] `typeNav` và `footerNav` neo cuộn tới `id` có thật; bấm cả hai đều nhảy đúng chỗ
+- [ ] `base.css` nạp `wght@300..700`, không phải `wght@400;600` — nếu không Variable Font Hover chết lặng
+- [ ] Vertical Cut Reveal: thẻ bọc có `aria-label` nguyên câu, `<span>` con `aria-hidden="true"`; tắt JS vẫn đọc được H1
 - [ ] Carousel: nút tạm dừng hiện rõ, có nhãn chữ, là `<button>`
 - [ ] Carousel: `prefers-reduced-motion` tắt autoplay + Ken Burns + crossfade, nút vẫn dùng được
 - [ ] Carousel: focus không bị bẫy; `aria-current` trên chấm; chấm dùng `--accent`
