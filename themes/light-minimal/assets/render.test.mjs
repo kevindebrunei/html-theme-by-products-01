@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { escapeHtml, imageAlt, cardHtml, facetBarHtml } from './render.mjs'
+import { escapeHtml, imageAlt, cardHtml, facetBarHtml, galleryHtml, sectionsHtml } from './render.mjs'
 import { STYLE_FAMILY } from './catalog.mjs'
 
 const product = {
@@ -102,4 +102,47 @@ test('facetBarHtml: không truyền họ đang chọn thì All được chọn',
   const counts = new Map([[STYLE_FAMILY.GOTHIC, 33], [STYLE_FAMILY.HOLIDAY, 10]])
   const html = facetBarHtml(counts, null)
   assert.match(html, /data-family=""[^>]*aria-pressed="true"/)
+})
+
+const fiveShot = {
+  sku: 'TUM-1', title: 'PIT Regalia', type: 'Tumbler', season: 'Halloween',
+  price: 49.95, variants: [{ price: 49.95 }],
+  images: ['/a/01.webp', '/a/02.webp', '/a/03.webp', '/a/04.webp', '/a/05.webp'],
+  sections: [
+    { heading: 'Design Story', html: '<p>Body.</p>' },
+    { heading: 'Care', html: '<ul><li>Hand wash.</li></ul>' },
+  ],
+}
+
+const fourShot = { ...fiveShot, sku: 'CAP-20260923-UY-021', title: 'DET - Motor City Emblem', type: 'Cap',
+  season: 'Year-round', images: ['/b/01.webp', '/b/02.webp', '/b/03.webp', '/b/04.webp'] }
+
+test('galleryHtml: render đúng số ảnh thật, không hardcode 5', () => {
+  assert.equal((galleryHtml(fiveShot).match(/<img/g) ?? []).length, 5)
+  assert.equal((galleryHtml(fourShot).match(/<img/g) ?? []).length, 4)
+})
+
+test('galleryHtml: mỗi ảnh có alt riêng theo vị trí', () => {
+  const html = galleryHtml(fiveShot)
+  assert.ok(html.includes('PIT Regalia - front'))
+  assert.ok(html.includes('PIT Regalia - in use'))
+})
+
+test('galleryHtml: SKU 4 ảnh không sinh alt "in use" của vị trí thứ 5', () => {
+  assert.equal(galleryHtml(fourShot).includes('- in use'), false)
+})
+
+test('galleryHtml: không có ảnh thì trả chuỗi rỗng', () => {
+  assert.equal(galleryHtml({ ...fiveShot, images: [] }), '')
+})
+
+test('sectionsHtml: giữ nguyên html thân bài, escape tiêu đề', () => {
+  const html = sectionsHtml(fiveShot)
+  assert.ok(html.includes('<p>Body.</p>'))
+  assert.ok(html.includes('Design Story'))
+  assert.ok(html.includes('<li>Hand wash.</li>'))
+})
+
+test('sectionsHtml: thiếu sections thì trả chuỗi rỗng, không vỡ', () => {
+  assert.equal(sectionsHtml({ ...fiveShot, sections: undefined }), '')
 })

@@ -56,3 +56,30 @@ export function facetBarHtml(counts, active = null) {
   for (const [family, n] of counts) items.push(btn(family, n, family))
   return items.join('')
 }
+
+/*
+  64 SKU có 5 ảnh, riêng CAP-20260923-UY-021 có 4 (spec §3.4).
+  Luôn lặp theo mảng thật, không giả định số lượng.
+*/
+export function galleryHtml(product) {
+  const images = product.images ?? []
+  if (images.length === 0) return ''
+  return images.map((src, i) => `
+    <figure class="gallery__item">
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(imageAlt(product, i))}"
+           loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async"
+           width="1264" height="1264"
+           sizes="(min-width:1280px) 560px, 90vw">
+    </figure>`).join('')
+}
+
+/* Thân bài (s.html) đến từ dữ liệu sản phẩm nội bộ, không phải người dùng nhập — giữ nguyên HTML; chỉ tiêu đề được escape. */
+export function sectionsHtml(product) {
+  const sections = product.sections ?? []
+  if (sections.length === 0) return ''
+  return sections.map((s) => `
+    <section class="pdp__section">
+      <h2 class="pdp__heading">${escapeHtml(s.heading)}</h2>
+      <div class="pdp__body">${s.html ?? ''}</div>
+    </section>`).join('')
+}

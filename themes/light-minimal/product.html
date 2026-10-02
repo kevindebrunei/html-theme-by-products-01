@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edition | Goldbourne &amp; Co.</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/components.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap header__inner">
+    <a class="wordmark" href="index.html">Goldbourne<span class="wordmark__co">&amp; Co.</span></a>
+    <nav class="nav" aria-label="Shop">
+      <ul class="nav__list" id="typeNav"></ul>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap section" id="pdp">
+  <p class="muted" id="pdpError" hidden>Edition not found.</p>
+
+  <div class="pdp" id="pdpContent" hidden>
+    <div class="gallery" id="gallery"></div>
+    <div class="pdp__info">
+      <p class="label muted" id="pdpMeta"></p>
+      <h1 id="pdpTitle"></h1>
+      <p class="pdp__hook" id="pdpHook"></p>
+      <p class="pdp__price" id="pdpPrice"></p>
+      <div id="pdpVariants"></div>
+      <button class="btn" type="button" id="pdpAdd">Add to cart</button>
+    </div>
+  </div>
+
+  <div id="pdpSections"></div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p class="muted footer__legal">Goldbourne &amp; Co. — Gilded Editions.</p>
+  </div>
+</footer>
+
+<script type="module" src="assets/product.js"></script>
+</body>
+</html>
