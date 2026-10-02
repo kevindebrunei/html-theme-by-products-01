@@ -31,7 +31,7 @@ test('bộ chặn copy: không cụm cấm nào xuất hiện trong theme', () =
 test('ranh giới IP: tên giải không nằm trong mã nguồn theme', () => {
   const text = themeText()
   for (const league of ['NFL', 'NBA', 'MLB', 'WWE']) {
-    assert.equal(new RegExp(`\\b${league}\\b`).test(text), false, `Tìm thấy tên giải: ${league}`)
+    assert.equal(new RegExp(`\\b${league}\\b`, 'i').test(text), false, `Tìm thấy tên giải: ${league}`)
   }
 })
 
