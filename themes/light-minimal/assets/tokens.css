@@ -1,0 +1,45 @@
+/*
+  Nơi DUY NHẤT chứa mã màu của theme light-minimal.
+  Mọi con số contrast dưới đây đã đo và được tokens.test.mjs canh lại.
+  Theme này KHÔNG có dark mode — themes/dark-maximalism giữ vai đó.
+*/
+:root {
+  --bg: #F6F1E7;          /* kem ấm — trắng tinh làm vàng kim ngả xám */
+  --fg: #14120E;          /* 16.62:1 trên --bg — AAA */
+  --muted: #6B6151;       /* 5.40:1 — AA */
+  --accent: #7A5F18;      /* 5.36:1 — AA. Vàng brand gốc chỉ 2.15:1 trên nền kem, không dùng được */
+  --accent-fg: #FFFFFF;   /* 6.04:1 trên --accent */
+  --border: #8A7C62;      /* 3.63:1 — viền là chức năng, không phải trang trí */
+
+  /* KHÔNG có --surface. #FFFFFF trên --bg chỉ 1.13:1 → mặt card vô hình. */
+
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Type scale 12/14/16/18/24/32 + 48/64 hero */
+  --fs-1: 0.75rem;
+  --fs-2: 0.875rem;
+  --fs-3: 1rem;
+  --fs-4: 1.125rem;
+  --fs-5: 1.5rem;
+  --fs-6: 2rem;
+  --fs-7: 3rem;
+  --fs-8: 4rem;
+
+  /* Spacing spacious */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-6: 6rem;
+
+  /* Passepartout */
+  --mat: 2rem;            /* 32px — lề ở lưới sản phẩm */
+  --mat-hero: 4rem;       /* 64px — lề ở hero */
+  --radius: 0;
+  --maxw: 1200px;
+
+  --dur: 350ms;
+  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);  /* xấp xỉ power1.out */
+}
