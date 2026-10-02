@@ -5,7 +5,7 @@ import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   STYLE_FAMILY, deriveStyleFamily, displayFamily,
-  byType, facetCounts, shouldRenderFacets, formatPrice, priceLabel,
+  byType, formatPrice, priceLabel,
   CURATED, NO_SWAP, curatedByType, TYPE_ORDER,
 } from './catalog.mjs'
 
@@ -57,24 +57,6 @@ test('displayFamily: Gold Drip gộp vào Heritage Crest ở lớp hiển thị'
 test('byType: lọc đúng dòng sản phẩm', () => {
   const all = [tumblerHalloween, cap, bpDrip]
   assert.deepEqual(byType(all, 'Cap'), [cap])
-})
-
-test('facetCounts: đếm theo họ hiển thị, Gold Drip cộng vào Heritage', () => {
-  const counts = facetCounts([bpHeritage, bpDrip, bpGraffiti])
-  assert.equal(counts.get(STYLE_FAMILY.HERITAGE), 3)
-  assert.equal(counts.has(STYLE_FAMILY.GOLD_DRIP), false)
-})
-
-test('facetCounts: tumbler tách hai họ', () => {
-  const counts = facetCounts([tumblerHalloween, tumblerHalloween, tumblerChristmas])
-  assert.equal(counts.get(STYLE_FAMILY.GOTHIC), 2)
-  assert.equal(counts.get(STYLE_FAMILY.HOLIDAY), 1)
-})
-
-test('shouldRenderFacets: chỉ render khi có từ 2 họ trở lên', () => {
-  assert.equal(shouldRenderFacets([tumblerHalloween, tumblerChristmas]), true)
-  assert.equal(shouldRenderFacets([cap, cap]), false)
-  assert.equal(shouldRenderFacets([bpHeritage, bpDrip]), false)
 })
 
 test('formatPrice: hai chữ số thập phân, null trả chuỗi rỗng', () => {

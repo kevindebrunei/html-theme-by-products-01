@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { escapeHtml, imageAlt, cardHtml, facetBarHtml, galleryHtml, sectionsHtml } from './render.mjs'
+import { escapeHtml, imageAlt, cardHtml, galleryHtml, sectionsHtml } from './render.mjs'
 import { STYLE_FAMILY } from './catalog.mjs'
 
 const product = {
@@ -86,22 +86,6 @@ test('cardHtml: title có ký tự đặc biệt được escape', () => {
   const odd = { ...product, title: 'Beauty & "The End"' }
   const html = cardHtml(odd)
   assert.ok(html.includes('Beauty &amp; &quot;The End&quot;'))
-})
-
-test('facetBarHtml: render một nút cho mỗi họ, đánh dấu nút đang chọn', () => {
-  const counts = new Map([[STYLE_FAMILY.GOTHIC, 33], [STYLE_FAMILY.HOLIDAY, 10]])
-  const html = facetBarHtml(counts, STYLE_FAMILY.HOLIDAY)
-  assert.ok(html.includes('All 43'))
-  assert.ok(html.includes('Gothic Jewel 33'))
-  assert.ok(html.includes('Holiday Ornament 10'))
-  assert.ok(html.includes('aria-pressed="true"'))
-  assert.equal((html.match(/aria-pressed="true"/g) ?? []).length, 1)
-})
-
-test('facetBarHtml: không truyền họ đang chọn thì All được chọn', () => {
-  const counts = new Map([[STYLE_FAMILY.GOTHIC, 33], [STYLE_FAMILY.HOLIDAY, 10]])
-  const html = facetBarHtml(counts, null)
-  assert.match(html, /data-family=""[^>]*aria-pressed="true"/)
 })
 
 const fiveShot = {

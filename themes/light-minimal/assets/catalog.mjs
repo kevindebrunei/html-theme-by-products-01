@@ -36,20 +36,6 @@ export function byType(products, type) {
   return products.filter((p) => p.type === type)
 }
 
-export function facetCounts(products) {
-  const counts = new Map()
-  for (const p of products) {
-    const f = displayFamily(deriveStyleFamily(p))
-    counts.set(f, (counts.get(f) ?? 0) + 1)
-  }
-  return counts
-}
-
-/* Caps / Backpacks / Shoes đều một họ → không render facet (spec §6). */
-export function shouldRenderFacets(products) {
-  return facetCounts(products).size > 1
-}
-
 export function formatPrice(n) {
   return n == null ? '' : '$' + Number(n).toFixed(2)
 }

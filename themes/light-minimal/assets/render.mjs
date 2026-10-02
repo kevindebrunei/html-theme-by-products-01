@@ -60,17 +60,6 @@ export function cardHtml(product, opts = {}) {
     </a>`
 }
 
-export function facetBarHtml(counts, active = null) {
-  const total = [...counts.values()].reduce((a, b) => a + b, 0)
-  const btn = (label, n, value) => {
-    const on = (value ?? '') === (active ?? '')
-    return `<button type="button" class="facet${on ? ' is-active' : ''}" data-family="${escapeHtml(value ?? '')}" aria-pressed="${on}">${escapeHtml(label)} ${n}</button>`
-  }
-  const items = [btn('All', total, null)]
-  for (const [family, n] of counts) items.push(btn(family, n, family))
-  return items.join('')
-}
-
 /*
   64 SKU có 5 ảnh, riêng CAP-20260923-UY-021 có 4 (spec §3.4).
   Luôn lặp theo mảng thật, không giả định số lượng.

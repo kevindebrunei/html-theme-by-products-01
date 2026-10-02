@@ -301,3 +301,11 @@
 
 .pdp__body ul { padding-left: 1.2em; }
 .pdp__body li { margin-bottom: 0.4em; }
+
+/* ---- Dải preview (spec §7) ---- */
+.preview { padding-block: var(--space-6); }
+
+.preview__heading { margin-bottom: var(--space-4); }
+
+/* Hairline vàng — thứ DUY NHẤT trong theme dùng var(--gold), và chỉ ở border */
+.preview + .preview { border-top: 1px solid var(--gold); }

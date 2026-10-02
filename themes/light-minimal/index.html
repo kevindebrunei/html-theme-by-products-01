@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Goldbourne &amp; Co. — Gilded Editions in Tumblers, Caps, Backpacks and Shoes</title>
 <meta name="description" content="Gold-relief tumblers, caps, backpacks and shoes, released in named Editions. Crest, seasonal and gothic ornament. Gilded on every side.">
-<link rel="stylesheet" href="assets/tokens.css">
-<link rel="stylesheet" href="assets/base.css">
-<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="/themes/light-minimal/assets/tokens.css">
+<link rel="stylesheet" href="/themes/light-minimal/assets/base.css">
+<link rel="stylesheet" href="/themes/light-minimal/assets/components.css">
 </head>
 <body>
 
@@ -15,7 +15,7 @@
 
 <header class="header">
   <div class="wrap header__inner">
-    <a class="wordmark" href="index.html">Goldbourne<span class="wordmark__co">&amp; Co.</span></a>
+    <a class="wordmark hover-wght" href="/themes/light-minimal/index.html">Goldbourne<span class="wordmark__co">&amp; Co.</span></a>
     <nav class="nav" aria-label="Shop">
       <ul class="nav__list" id="typeNav"></ul>
     </nav>
@@ -25,23 +25,50 @@
 <main>
   <section class="hero section">
     <div class="wrap hero__inner">
-      <div class="hero__mat">
-        <img class="hero__img" id="heroImg" src="" alt="" width="1264" height="1264" decoding="async">
+      <div class="hero" id="heroCarousel" role="region"
+           aria-roledescription="carousel" aria-label="Featured Editions">
+        <div class="hero__mat"><div class="hero__track" data-carousel-track></div></div>
+        <p class="visually-hidden" data-carousel-live aria-live="polite"></p>
+        <div class="hero__controls">
+          <button type="button" class="hero__btn" data-carousel-prev>Prev</button>
+          <button type="button" class="hero__btn" data-carousel-next>Next</button>
+          <button type="button" class="hero__btn" data-carousel-pause aria-pressed="false">Pause</button>
+          <div class="hero__dots" data-carousel-dots></div>
+        </div>
       </div>
       <div class="hero__text">
-        <h1>Team identity, rewritten in the language of a fashion house.</h1>
+        <h1 data-cut-reveal>Team identity, rewritten in the language of a fashion house.</h1>
         <p class="hero__sub muted">Gilded on every side.</p>
-        <a class="btn" href="#catalog">View the Editions</a>
+        <a class="btn" href="#shop-tumbler">View the Editions</a>
       </div>
     </div>
   </section>
 
-  <section class="section" id="catalog">
+  <section class="section preview" id="shop-tumbler">
     <div class="wrap">
-      <h2 id="catalogHeading">All Editions</h2>
-      <div class="facets" id="facets" role="group" aria-label="Filter by style"></div>
-      <div class="grid" id="grid"></div>
-      <p class="muted" id="gridEmpty" hidden>No Editions match this filter.</p>
+      <h2 class="preview__heading">Tumblers</h2>
+      <div class="grid" data-grid="Tumbler"></div>
+    </div>
+  </section>
+
+  <section class="section preview" id="shop-cap">
+    <div class="wrap">
+      <h2 class="preview__heading">Caps</h2>
+      <div class="grid" data-grid="Cap"></div>
+    </div>
+  </section>
+
+  <section class="section preview" id="shop-backpack">
+    <div class="wrap">
+      <h2 class="preview__heading">Backpacks</h2>
+      <div class="grid" data-grid="Backpack"></div>
+    </div>
+  </section>
+
+  <section class="section preview" id="shop-shoes">
+    <div class="wrap">
+      <h2 class="preview__heading">Shoes</h2>
+      <div class="grid" data-grid="Shoes"></div>
     </div>
   </section>
 </main>
@@ -54,6 +81,6 @@
   </div>
 </footer>
 
-<script type="module" src="assets/main.js"></script>
+<script type="module" src="/themes/light-minimal/assets/main.js"></script>
 </body>
 </html>
