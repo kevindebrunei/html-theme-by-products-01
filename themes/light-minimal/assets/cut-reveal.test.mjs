@@ -14,17 +14,31 @@ test('splitWords bỏ chuỗi rỗng', () => {
   Tách chữ thành span làm hỏng screen reader nếu làm ẩu: nó đọc từng mảnh rời.
   Bọc ngoài mang aria-label nguyên câu, span con aria-hidden (spec §7.5).
 */
-test('cutMarkup: mọi span con đều aria-hidden', () => {
+test('cutMarkup: mọi span con đều aria-hidden (trừ span text trong cùng)', () => {
   const html = cutMarkup('one two')
-  const spans = html.match(/<span[^>]*>/g) ?? []
-  const outer = spans.filter((s) => s.includes('class="cut"'))
-  assert.ok(outer.length > 0)
-  for (const s of outer) assert.match(s, /aria-hidden="true"/)
+  // Kiểm cả span từ (class="cut") LẪN span khoảng trắng (không có class) —
+  // lọc riêng theo class="cut" như trước sẽ bỏ sót trường hợp refactor làm
+  // rớt aria-hidden khỏi span khoảng trắng. Chỉ loại span text trong cùng
+  // (class="cut__in"): nó không cần tự mang aria-hidden vì đã nằm trong một
+  // ancestor luôn luôn aria-hidden.
+  const spans = (html.match(/<span[^>]*>/g) ?? []).filter((s) => !s.includes('cut__in'))
+  assert.ok(spans.length > 0)
+  for (const s of spans) assert.match(s, /aria-hidden="true"/)
 })
 
-test('cutMarkup: mỗi từ có chỉ số --i để stagger', () => {
+test('cutMarkup: mỗi từ có chỉ số --i để stagger, đếm theo TỪ chứ không theo vị trí mảng', () => {
+  // splitWords giữ phần tử khoảng trắng xen giữa từ, nên 'two' nằm ở vị trí
+  // mảng 2 chứ không phải 1. Nếu --i lấy thẳng vị trí mảng, độ trễ so le
+  // (--i * 60ms) sẽ gấp đôi dự kiến — đây từng là một lỗi thật.
   assert.match(cutMarkup('one two'), /--i:0/)
-  assert.match(cutMarkup('one two'), /--i:2/)
+  assert.match(cutMarkup('one two'), /--i:1/)
+})
+
+test('cutMarkup: H1 thật của trang chủ — chỉ số lớn nhất là 9 (10 từ), không phải 18', () => {
+  const h1 = 'Team identity, rewritten in the language of a fashion house.'
+  const indices = [...cutMarkup(h1).matchAll(/--i:(\d+)/g)].map((m) => Number(m[1]))
+  assert.equal(indices.length, 10)
+  assert.equal(Math.max(...indices), 9)
 })
 
 test('cutMarkup: escape ký tự HTML trong nội dung', () => {
