@@ -239,7 +239,9 @@ Hai điều đã kiểm và không còn phải đoán:
 - Ảnh `02` của cả ba SKU đều sạch — studio trơn, hoạ tiết chỉ nằm trên giày.
 - Ảnh `03` của cả ba cũng sạch — macro cận cảnh, hậu cảnh xoá phông.
 
-Nên dòng Shoes gỡ chặn được bằng một quyết định duy nhất: **cho phép thẻ sản phẩm chọn ảnh chính khác `01`**. Quyết định đó đổi giao diện giữa §5.1 và danh sách tuyển tay, vượt phạm vi của task tuyển SKU, nên để chủ task chốt. Trong lúc chờ, ba mã Shoes vẫn nằm trong `CURATED` vì chúng *là* cả dòng — bỏ bớt hay giấu dòng đi còn sai hơn.
+Nên dòng Shoes gỡ chặn được bằng một quyết định duy nhất: **cho phép thẻ sản phẩm chọn ảnh chính khác `01`** — một map `PRIMARY_INDEX` đặt cạnh `NO_SWAP`, mặc định 0, ba mã Shoes trỏ sang 1.
+
+**Đã chốt ngày 03/10/2026: không làm, giữ nguyên ảnh `01`.** Chủ store được trình bày cả phương án trên lẫn phương án bỏ hẳn dải Shoes, và chọn chấp nhận rủi ro. Ba mã Shoes nằm trong `CURATED` với ảnh `01` như hiện có — chúng *là* cả dòng, bỏ bớt hay giấu dòng đi còn sai hơn. Lý do đầy đủ và đường quay đầu nếu sau này muốn đảo quyết định: §10.1.
 
 #### Loại ở vòng sơ tuyển
 
