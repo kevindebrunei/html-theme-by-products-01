@@ -1,5 +1,5 @@
 /* main.js — wiring DOM cho trang chủ. Logic nằm ở catalog.mjs, render.mjs, carousel.mjs. */
-import { TYPE_ORDER, sectionId } from './catalog.mjs'
+import { TYPE_ORDER, sectionId, hashSectionTarget } from './catalog.mjs'
 import { gridHtml, imageAlt, navHtml } from './render.mjs'
 import { HERO_SKUS, mountCarousel } from './carousel.mjs'
 import { mountCutReveal } from './cut-reveal.mjs'
@@ -100,6 +100,29 @@ function renderSections(products) {
   observeReveal(document.body)
 }
 
+/*
+  Deep link (vd. tới từ product.html) chạm hash NGAY khi trang còn rỗng — tài
+  liệu lúc đó chỉ cao chừng 1 màn hình, trình duyệt cuộn fragment tới một chỗ
+  rồi renderSections() render xong 12 thẻ, chiều cao tài liệu nhảy, vị trí cũ
+  giờ trật khỏi dải đích. Đo thật: lệch tới 1804px, dải đích nằm ngoài màn
+  hình hoàn toàn (xem báo cáo nghiệm thu).
+
+  Cuộn lại SAU khi renderSections() đã bơm xong DOM sửa đúng gốc — không phải
+  vá bằng offset tay. scroll-padding-top trong base.css tự lo khoảng chừa
+  cho header sticky, nên không tính lại 72px ở đây.
+
+  behavior: 'instant' ép cuộn tức thì bất kể html { scroll-behavior: smooth }
+  — mượt chỉ đúng cảm giác cho neo bấm TRONG trang, còn đây là tải trang.
+*/
+function scrollToHashSection() {
+  const validIds = TYPE_ORDER.map(sectionId)
+  const target = hashSectionTarget(location.hash, validIds)
+  if (!target) return
+  const el = document.getElementById(target)
+  if (!el) return
+  el.scrollIntoView({ behavior: 'instant', block: 'start' })
+}
+
 function renderHero(products) {
   const root = document.getElementById('heroCarousel')
   if (!root) return
@@ -120,6 +143,7 @@ async function init() {
   renderNav(document.getElementById('footerNav'))
   renderHero(products)
   renderSections(products)
+  scrollToHashSection()
 }
 
 init()

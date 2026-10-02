@@ -108,6 +108,14 @@ img { display: block; max-width: 100%; }
 .hover-wght:hover, .hover-wght:focus-visible { font-weight: 600; }
 
 /*
+  .wordmark đã đứng sẵn ở weight 600 (ngoại lệ duy nhất của theme, xem rule
+  phía trên) — hover về 600 là no-op đo được: 600 → 600, không đổi gì.
+  Đích hover riêng, nặng hơn nền của chính nó. Không hạ weight nền xuống để
+  đạt chênh lệch — 600 là chốt của spec cho dấu hiệu thương hiệu.
+*/
+.wordmark.hover-wght:hover, .wordmark.hover-wght:focus-visible { font-weight: 700; }
+
+/*
   Vertical Cut Reveal — port ý tưởng từ Fancy Components (MIT).
   Bọc ngoài mang aria-label nguyên câu, các span con aria-hidden (cut-reveal.mjs).
   animation-fill-mode backwards: trước khi delay trôi hết thì áp trạng thái from,

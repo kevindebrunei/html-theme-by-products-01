@@ -137,3 +137,39 @@ test('carousel khai đúng vai trò cho screen reader', () => {
   assert.match(html, /aria-roledescription="carousel"/)
   assert.match(html, /data-carousel-live[^>]*aria-live="polite"|aria-live="polite"[^>]*data-carousel-live/)
 })
+
+/*
+  .wordmark nền sẵn là font-weight: 600 (ngoại lệ duy nhất của theme). Quy tắc
+  hover dùng chung .hover-wght:hover cũng đặt 600 — hover trên wordmark vì
+  vậy là no-op đo được (600 → 600, không đổi gì). Test này đọc thẳng cả hai
+  rule trong base.css và assert hai weight PHẢI khác nhau, để ai sau này lỡ
+  chỉnh một trong hai cho trùng lại thì test đỏ ngay, không phải chờ soi bằng
+  mắt trên trình duyệt thật mới bắt được.
+*/
+test('wordmark có đích hover khác weight nền — hover không được là no-op', () => {
+  const css = read(ASSETS, 'base.css')
+  const base = css.match(/\.wordmark\s*\{([^}]*)\}/)
+  assert.ok(base, 'không tìm thấy rule .wordmark')
+  const hover = css.match(/\.wordmark\.hover-wght:hover[^{]*\{([^}]*)\}/)
+  assert.ok(hover, 'không tìm thấy rule hover riêng cho .wordmark.hover-wght')
+
+  const weightOf = (body) => {
+    const m = body.match(/font-weight:\s*(\d+)/)
+    assert.ok(m, `rule không khai font-weight: ${body}`)
+    return Number(m[1])
+  }
+
+  const baseWeight = weightOf(base[1])
+  const hoverWeight = weightOf(hover[1])
+  assert.equal(baseWeight, 600, 'weight nền của .wordmark phải giữ nguyên 600 (spec)')
+  assert.notEqual(hoverWeight, baseWeight,
+    `hover weight (${hoverWeight}) trùng weight nền (${baseWeight}) — hover là no-op`)
+})
+
+/* Task 7 để sót index.html và product.html lệch class wordmark — control trông giống nhau phải hành xử giống nhau */
+test('wordmark dùng cùng class ở cả hai trang (hover-wght)', () => {
+  for (const page of ['index.html', 'product.html']) {
+    const html = read(THEME, page)
+    assert.match(html, /class="wordmark hover-wght"/, `${page} thiếu class hover-wght trên wordmark`)
+  }
+})

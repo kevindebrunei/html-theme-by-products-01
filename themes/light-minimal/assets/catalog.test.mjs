@@ -7,6 +7,7 @@ import {
   STYLE_FAMILY, deriveStyleFamily, displayFamily,
   byType, formatPrice, priceLabel,
   CURATED, NO_SWAP, curatedByType, TYPE_ORDER,
+  sectionId, hashSectionTarget,
 } from './catalog.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -121,4 +122,36 @@ test('curatedByType giữ đúng thứ tự trong CURATED', () => {
   const caps = curatedByType(PRODUCTS, 'Cap').map((p) => p.sku)
   const expected = CURATED.filter((s) => caps.includes(s))
   assert.deepEqual(caps, expected)
+})
+
+/*
+  hashSectionTarget là phần QUYẾT ĐỊNH của fix deep-link scroll (spec nghiệm
+  thu Task 9): browser cuộn tới hash khi tài liệu còn rỗng, renderSections()
+  render xong 12 thẻ thì chiều cao nhảy và vị trí cũ trật khỏi dải đích (đo
+  thật lệch tới 1804px). main.js cuộn lại sau khi render xong, nhưng PHẦN
+  CHẠM DOM đó không test đơn vị được — tách quyết định "hash này có trỏ tới
+  một dải có thật không" ra đây để test không cần DOM.
+*/
+test('hashSectionTarget: hash khớp một dải có thật trả về đúng id', () => {
+  const validIds = TYPE_ORDER.map(sectionId)
+  assert.equal(hashSectionTarget('#shop-shoes', validIds), 'shop-shoes')
+})
+
+test('hashSectionTarget: hash rác trả về null', () => {
+  const validIds = TYPE_ORDER.map(sectionId)
+  assert.equal(hashSectionTarget('#khong-ton-tai', validIds), null)
+})
+
+test('hashSectionTarget: hash rỗng hoặc vắng mặt trả về null', () => {
+  const validIds = TYPE_ORDER.map(sectionId)
+  assert.equal(hashSectionTarget('', validIds), null)
+  assert.equal(hashSectionTarget(undefined, validIds), null)
+})
+
+test('hashSectionTarget: hash đúng định dạng nhưng ngoài danh sách dải trả về null', () => {
+  assert.equal(hashSectionTarget('#shop-hat', ['shop-tumbler', 'shop-cap']), null)
+})
+
+test('hashSectionTarget: nhận hash có hoặc không có dấu #', () => {
+  assert.equal(hashSectionTarget('shop-tumbler', ['shop-tumbler']), 'shop-tumbler')
 })

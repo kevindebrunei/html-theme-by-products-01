@@ -102,3 +102,16 @@ export function curatedByType(products, type) {
   trong Node. Logic thuần thì ở file thuần.
 */
 export function sectionId(type) { return `shop-${type.toLowerCase()}` }
+
+/*
+  Quyết định thuần cho deep-link: hash nào trỏ tới một dải có thật thì cuộn
+  tới, hash rác hoặc không khớp thì không làm gì. Tách khỏi main.js vì
+  main.js chạm DOM (và tự gọi init() lúc import) — logic quyết định phải
+  nằm ở file thuần để test bằng node:test, phần chạm DOM (scrollIntoView)
+  vẫn ở main.js.
+*/
+export function hashSectionTarget(hash, validIds) {
+  const id = String(hash ?? '').replace(/^#/, '')
+  if (!id) return null
+  return validIds.includes(id) ? id : null
+}
