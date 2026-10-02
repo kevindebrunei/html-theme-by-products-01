@@ -170,7 +170,7 @@ Expected: FAIL — `Cannot find module '../lib/discover.mjs'`
 ```js
 // lib/discover.mjs
 // Luật §4: suy trang cần chụp từ file bị sửa, không từ tên thư mục.
-import { readdirSync, statSync } from 'node:fs'
+import { readdirSync } from 'node:fs'
 import { dirname, join, resolve, relative, sep } from 'node:path'
 
 const ASSET_EXT = new Set(['.css', '.js', '.mjs'])
@@ -235,8 +235,6 @@ export function pagesToShoot(editedRelPaths, repoRoot, { maxShots = 4 } = {}) {
   return { pages: all.slice(0, maxShots), truncated: Math.max(0, all.length - maxShots) }
 }
 ```
-
-Lưu ý: `statSync` không dùng tới, bỏ khỏi import nếu linter phàn nàn.
 
 - [ ] **Step 5: Chạy test để xác nhận đạt**
 
@@ -776,7 +774,7 @@ const MIN_BYTES = 40_000
 const MIN_COLORS = 32
 
 const PY = `
-import json, sys
+import json, os, sys
 from PIL import Image, ImageDraw
 
 desktop, mobile, out = sys.argv[1], sys.argv[2], sys.argv[3]
@@ -790,7 +788,6 @@ d.text((8, 8), 'desktop %dx%d' % (a.width, a.height), fill=(140, 140, 140))
 d.text((a.width + 8, 8), 'mobile %dx%d' % (b.width, b.height), fill=(140, 140, 140))
 canvas.save(out, optimize=True)
 
-import os
 colors = canvas.getcolors(maxcolors=100000)
 print(json.dumps({
     'width': W, 'height': H,
@@ -867,7 +864,7 @@ function fixture({ cwd, mappingCwd }) {
 }
 
 test('tra đúng thread theo cwd', () => {
-  const f = fixture({ cwd: 'C:\\\\a\\\\b', mappingCwd: 'C:\\\\a\\\\b' })
+  const f = fixture({ cwd: 'C:\\a\\b', mappingCwd: 'C:\\a\\b' })
   const t = resolveTarget(f.cwd, f.paths)
   assert.equal(t.threadId, 391)
   assert.equal(t.token, 'T0K3N')
@@ -875,18 +872,25 @@ test('tra đúng thread theo cwd', () => {
 })
 
 test('khác hoa thường và khác kiểu gạch vẫn khớp trên Windows', () => {
-  const f = fixture({ cwd: 'c:/A/B', mappingCwd: 'C:\\\\a\\\\b' })
+  const f = fixture({ cwd: 'c:/A/B', mappingCwd: 'C:\\a\\b' })
+  assert.equal(resolveTarget(f.cwd, f.paths)?.threadId, 391)
+})
+
+// mapping.json thật của herdr lưu cwd dạng JSON nên gạch bị nhân đôi khi
+// đọc thô; chuẩn hoá phải gộp gạch lặp, không chỉ đổi kiểu gạch.
+test('gạch lặp trong mapping vẫn khớp', () => {
+  const f = fixture({ cwd: 'C:/a/b', mappingCwd: 'C:\\\\a\\\\b' })
   assert.equal(resolveTarget(f.cwd, f.paths)?.threadId, 391)
 })
 
 test('cwd lạ thì trả null chứ không đoán topic', () => {
-  const f = fixture({ cwd: 'C:\\\\khac', mappingCwd: 'C:\\\\a\\\\b' })
+  const f = fixture({ cwd: 'C:\\khac', mappingCwd: 'C:\\a\\b' })
   assert.equal(resolveTarget(f.cwd, f.paths), null)
 })
 
 test('thiếu file config thì trả null, không ném', () => {
-  const f = fixture({ cwd: 'C:\\\\a\\\\b', mappingCwd: 'C:\\\\a\\\\b' })
-  assert.equal(resolveTarget(f.cwd, { ...f.paths, configPath: 'C:\\\\khong-co.json' }), null)
+  const f = fixture({ cwd: 'C:\\a\\b', mappingCwd: 'C:\\a\\b' })
+  assert.equal(resolveTarget(f.cwd, { ...f.paths, configPath: 'C:\\khong-co.json' }), null)
 })
 ```
 
@@ -901,11 +905,9 @@ Expected: FAIL — `Cannot find module '../lib/telegram.mjs'`
 // lib/telegram.mjs
 // Plugin herdr chỉ nhận ảnh VÀO, không có đường đẩy ảnh ra, nên gọi thẳng
 // Bot API. Token đọc lúc chạy, không bao giờ ghi ra log hay env — §7, §9.
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { readFileSync, openAsBlob } from 'node:fs'
+import { join, basename } from 'node:path'
 import { homedir } from 'node:os'
-import { openAsBlob } from 'node:fs'
-import { basename } from 'node:path'
 
 export function herdrPaths() {
   const roaming = process.env.APPDATA ?? join(homedir(), 'AppData', 'Roaming')
@@ -916,9 +918,9 @@ export function herdrPaths() {
   }
 }
 
-// Windows: so sánh không phân biệt hoa thường và kiểu gạch.
+// Windows: so sánh không phân biệt hoa thường, kiểu gạch, hay gạch lặp.
 function normCwd(p) {
-  return String(p).replace(/\\/g, '/').replace(/\/+$/, '').toLowerCase()
+  return String(p).replace(/[\\/]+/g, '/').replace(/\/$/, '').toLowerCase()
 }
 
 export function resolveTarget(cwd, paths = herdrPaths()) {
@@ -959,7 +961,7 @@ export async function sendPhoto({ token, chatId, threadId, file, caption }) {
 - [ ] **Step 4: Chạy test để xác nhận đạt**
 
 Run: `cd ~/.claude/skills/shot-report && node --test tests/telegram.test.mjs`
-Expected: PASS — `# pass 4`, `# fail 0`
+Expected: PASS — `# pass 5`, `# fail 0`
 
 - [ ] **Step 5: Commit**
 
@@ -986,7 +988,7 @@ git commit -m "feat(telegram): tra topic theo cwd và gửi sendPhoto, không l�
 #!/usr/bin/env node
 // shot-report.mjs — điều phối: serve → chụp → ghép → gửi.
 import { mkdirSync, rmSync, readdirSync, statSync, appendFileSync } from 'node:fs'
-import { join, resolve, basename, dirname } from 'node:path'
+import { join, resolve, basename } from 'node:path'
 import { pagesToShoot } from './lib/discover.mjs'
 import { loadConfig, queryForPage } from './lib/config.mjs'
 import { startServer } from './lib/serve.mjs'
@@ -1028,7 +1030,7 @@ function sweep(repoRoot) {
   }
 }
 
-export async function run({ repoRoot, pages, dryRun = false }) {
+export async function run({ repoRoot, pages, truncated = 0, dryRun = false }) {
   const root = resolve(repoRoot)
   const cfg = loadConfig(root)
   if (!cfg.enabled) {
@@ -1052,6 +1054,7 @@ export async function run({ repoRoot, pages, dryRun = false }) {
       const q = p.queryError ? `LỖI: ${p.queryError}` : p.query || '(không query)'
       console.log(`${p.rel}  →  ${q}`)
     }
+    if (truncated) console.log(`(đã cắt ${truncated} trang do trần maxShots)`)
     return { sent: 0, skipped: ['dry-run'] }
   }
 
@@ -1095,7 +1098,9 @@ export async function run({ repoRoot, pages, dryRun = false }) {
         const bits = [p.rel, 'desktop+mobile']
         if (p.query) bits.push(p.query)
         if (r.blank) bits.push('⚠ trang có vẻ trống')
-        let caption = bits.join(' · ')
+        // §4: cắt bớt phải nói ra. Cắt âm thầm sẽ bị đọc thành "đã phủ hết".
+        if (truncated) bits.push(`⚠ đã cắt ${truncated} trang do trần ${cfg.maxShots}`)
+        const caption = bits.join(' · ')
 
         if (!target) {
           log(root, `đã chụp ${basename(merged)} nhưng không có topic để gửi`)
@@ -1117,10 +1122,11 @@ export async function run({ repoRoot, pages, dryRun = false }) {
 }
 
 function parseArgs(argv) {
-  const out = { repoRoot: process.cwd(), pages: [], dryRun: false }
+  const out = { repoRoot: process.cwd(), pages: [], truncated: 0, dryRun: false }
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--repo') out.repoRoot = argv[++i]
     else if (argv[i] === '--pages') out.pages = argv[++i].split(',').filter(Boolean)
+    else if (argv[i] === '--truncated') out.truncated = Number(argv[++i]) || 0
     else if (argv[i] === '--dry-run') out.dryRun = true
     else if (argv[i] === '--edited') out.edited = argv[++i].split(',').filter(Boolean)
   }
@@ -1133,7 +1139,7 @@ if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`) {
     const cfg = loadConfig(args.repoRoot)
     const r = pagesToShoot(args.edited, args.repoRoot, { maxShots: cfg.maxShots })
     args.pages = r.pages
-    if (r.truncated) console.log(`(đã cắt ${r.truncated} trang do trần ${cfg.maxShots})`)
+    args.truncated = r.truncated
   }
   if (args.pages.length === 0) {
     console.log('không có trang nào để chụp')
@@ -1330,13 +1336,19 @@ async function main() {
   const cfg = loadConfig(cwd)
   if (!cfg.enabled) process.exit(0)
 
-  const { pages } = pagesToShoot(edited, cwd, { maxShots: cfg.maxShots })
+  const { pages, truncated } = pagesToShoot(edited, cwd, { maxShots: cfg.maxShots })
   if (pages.length === 0) process.exit(0)
 
   // Chạy rời, không chờ: Stop hook không được giữ lượt lại.
+  // truncated phải đi kèm, nếu không caption sẽ im lặng về phần bị cắt — §4.
   const child = execFile(
     process.execPath,
-    [join(HERE, 'shot-report.mjs'), '--repo', cwd, '--pages', pages.join(',')],
+    [
+      join(HERE, 'shot-report.mjs'),
+      '--repo', cwd,
+      '--pages', pages.join(','),
+      '--truncated', String(truncated),
+    ],
     { detached: true, stdio: 'ignore' },
   )
   child.unref()
@@ -1558,13 +1570,14 @@ tmp/
 | 6 | Mở Chrome bình thường rồi chạy ca 4 | vẫn ra ảnh (xác minh `--user-data-dir` cách ly thật) |
 | 7 | Đổi tạm `.shots.json` thành `{}`, chạy ca 3 | PDP bị gắn `⚠ trang có vẻ trống` trong caption |
 | 8 | `node shot-report.mjs --repo ~/.claude/skills/shot-report --edited lib/config.mjs --dry-run` | `không có trang nào để chụp` |
+| 9 | Đặt tạm `"maxShots": 1` trong `.shots.json`, chạy `--edited themes/light-minimal/assets/tokens.css --dry-run` | in 1 trang **và** dòng `(đã cắt 1 trang do trần maxShots)`. **Khôi phục `maxShots` về 4 sau đó.** |
 
 Ca 3 cần chủ repo xác nhận bằng mắt trên điện thoại — agent không nhìn được màn hình đó. **Không đánh dấu task xong trước khi có xác nhận ấy.**
 
 - [ ] **Step 7: Chạy toàn bộ test gói**
 
 Run: `cd ~/.claude/skills/shot-report && node --test tests/`
-Expected: PASS — tổng `# pass 32`, `# fail 0`
+Expected: PASS — tổng `# pass 33`, `# fail 0`
 
 - [ ] **Step 8: Commit repo theme**
 
