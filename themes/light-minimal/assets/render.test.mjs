@@ -62,8 +62,7 @@ test('cardHtml: có width/height để tránh layout shift', () => {
 
 test('cardHtml: giá và giá gạch', () => {
   const html = cardHtml(product)
-  assert.ok(html.includes('$49.95'))
-  assert.ok(html.includes('$59.95'))
+  assert.match(html, /<p class="card__price">\$49\.95<s class="price__was">\$59\.95<\/s><\/p>/)
 })
 
 test('cardHtml: backpack nhiều variant hiện from, không hiện giá gạch', () => {
