@@ -45,7 +45,7 @@ test('contrast: chữ trên nền accent đạt AA', () => {
 
 /*
   Viền là cơ chế DUY NHẤT tách ảnh khỏi nền ở theme này.
-  Ảnh cap nền marble #F0E8DC chỉ đạt 1.08:1 so với nền kem (spec §5.1).
+  11 ảnh cap nền marble chỉ đạt ~1.1:1 so với nền trắng (spec §5.1).
 */
 test('contrast: viền đạt ngưỡng non-text 3:1', () => {
   assert.ok(contrast(token('border'), token('bg')) >= 3,

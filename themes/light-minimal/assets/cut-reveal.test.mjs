@@ -26,14 +26,15 @@ test('cutMarkup: mọi span con đều aria-hidden (trừ span text trong cùng)
   for (const s of spans) assert.match(s, /aria-hidden="true"/)
 })
 
-test('cutMarkup: mỗi từ có chỉ số --i để stagger, đếm theo TỪ chứ không theo vị trí mảng', () => {
-  // splitWords giữ phần tử khoảng trắng xen giữa từ, nên 'two' nằm ở vị trí
-  // mảng 2 chứ không phải 1. Nếu --i lấy thẳng vị trí mảng, độ trễ so le
-  // (--i * 60ms) sẽ gấp đôi dự kiến — đây từng là một lỗi thật.
-  assert.match(cutMarkup('one two'), /--i:0/)
-  assert.match(cutMarkup('one two'), /--i:1/)
-})
-
+/*
+  splitWords giữ phần tử khoảng trắng xen giữa từ, nên 'two' nằm ở vị trí
+  mảng 2 chứ không phải 1. Nếu --i lấy thẳng vị trí mảng, độ trễ so le
+  (--i * 60ms) sẽ gấp đôi dự kiến — đây từng là một lỗi thật.
+  (Test riêng cho 'one two' từng đứng ở đây đã bị gộp: nó chỉ kiểm --i:0 và
+  --i:1, điều mà test H1 thật ngay dưới — 10 từ, đếm đủ chỉ số 0..9 — đã bao
+  trọn. Mutation test: đổi bộ đếm sang vị trí mảng khiến CẢ HAI test đỏ,
+  không riêng gì test này.)
+*/
 test('cutMarkup: H1 thật của trang chủ — chỉ số lớn nhất là 9 (10 từ), không phải 18', () => {
   const h1 = 'Team identity, rewritten in the language of a fashion house.'
   const indices = [...cutMarkup(h1).matchAll(/--i:(\d+)/g)].map((m) => Number(m[1]))

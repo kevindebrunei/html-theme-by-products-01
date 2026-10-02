@@ -15,7 +15,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Cormorant 400 — trên nền kem không cần 600 như theme dark (spec §5.4) */
+/* Cormorant 400 — trên nền trắng không cần 600 như theme dark (spec §5.4) */
 h1, h2 {
   font-family: var(--font-heading);
   font-weight: 400;

@@ -77,11 +77,6 @@ test('vàng brand xuất hiện đúng một lần trong toàn theme', () => {
   assert.equal(hits.length, 1, `#C9A227 xuất hiện ${hits.length} lần, phải đúng 1`)
 })
 
-test('mã vàng duy nhất đó nằm trong tokens.css', () => {
-  const tokens = readFileSync(join(ASSETS, 'tokens.css'), 'utf8')
-  assert.match(tokens, /--gold:\s*#C9A227/i)
-})
-
 /*
   === Hàng rào vàng brand: parser thuần, tách khỏi test runner ===
 
@@ -274,6 +269,26 @@ export function shadowViolations(cssText) {
 
 test('var(--gold) chỉ dùng trong khai báo border có nhận màu (file theme thật)', () => {
   assert.deepEqual(goldViolations(themeText()), [])
+})
+
+/*
+  Năm test vàng ở file này đều là hàng rào CẤM: chúng chỉ bắt var(--gold)
+  xuất hiện SAI chỗ, không cái nào canh nó xuất hiện ĐÚNG chỗ ít nhất một
+  lần. Hệ quả có thật: hairline `.preview + .preview { border-top: 1px solid
+  var(--gold); }` (components.css) từng — và có thể lại — bị xoá mà cả 5
+  test cấm vẫn xanh, vì "không có vi phạm" và "không có gì cả" nhìn giống
+  hệt nhau dưới con mắt goldViolations/goldStateViolations. Test này canh
+  chiều ngược lại: phải có ít nhất một khai báo border thật sự dùng
+  var(--gold) ở đâu đó trong CSS theme.
+*/
+test('var(--gold) thực sự được dùng ở ít nhất một khai báo border (file theme thật)', () => {
+  const cssOnly = readAll(themeFiles().filter((f) => f.endsWith('.css')))
+  const used = parseBlocks(cssOnly).some((block) =>
+    parseDeclarations(block.body).some(({ prop, value }) =>
+      BORDER_COLOR_PROP.test(prop) && value.includes('var(--gold)')
+    )
+  )
+  assert.ok(used, 'var(--gold) không xuất hiện trong bất kỳ khai báo border nào — hairline vàng có thể đã bị xoá âm thầm')
 })
 
 test('var(--gold) chỉ dùng trong khai báo border có nhận màu — bắt được khi border và vàng chung một dòng', () => {

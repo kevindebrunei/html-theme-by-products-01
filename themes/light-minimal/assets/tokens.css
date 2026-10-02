@@ -27,7 +27,6 @@
   --fs-5: 1.5rem;
   --fs-6: 2rem;
   --fs-7: 3rem;
-  --fs-8: 4rem;
   --fs-9: 4.5rem;
 
   --space-1: 0.5rem;
@@ -36,7 +35,7 @@
   --space-4: 2rem;
   --space-5: 3rem;
   --space-6: 6rem;
-  --space-7: 8rem;
+  --space-7: 8rem;         /* khai sẵn, chưa dùng — chờ "thêm khoảng thở" §2.3 */
 
   --mat: 1.5rem;          /* 24px — padding thẻ ở desktop */
   --mat-hero: 4rem;
@@ -49,6 +48,5 @@
 
   --dur: 350ms;
   --dur-slow: 700ms;
-  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-lux: cubic-bezier(0.16, 1, 0.3, 1);   /* expo-out — thứ tạo cảm giác "mượt" */
 }

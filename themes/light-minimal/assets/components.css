@@ -3,9 +3,6 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-3);
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
 @media (min-width: 768px) {
@@ -95,13 +92,6 @@
 }
 
 /* ---- Thanh facet (spec §6) ---- */
-.facets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-  margin-bottom: var(--space-4);
-}
-
 .facet {
   font-family: var(--font-body);
   font-weight: 500;
@@ -321,8 +311,7 @@
 .pdp__body li { margin-bottom: 0.4em; }
 
 /* ---- Dải preview (spec §7) ---- */
-.preview { padding-block: var(--space-6); }
-
+/* Không cần padding-block riêng: mọi .preview trong index.html đều mang luôn class .section (base.css) */
 .preview__heading { margin-bottom: var(--space-4); }
 
 /* Hairline vàng — thứ DUY NHẤT trong theme dùng var(--gold), và chỉ ở border */

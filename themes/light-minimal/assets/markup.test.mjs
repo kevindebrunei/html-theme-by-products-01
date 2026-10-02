@@ -22,23 +22,77 @@ test('font nạp theo trục variable, không phải weight tĩnh', () => {
 })
 
 /*
-  base.css cũ đặt .reveal { opacity: 0 } làm mặc định và phụ thuộc JS trả về 1.
-  JS không chạy — đúng kịch bản bug path gây ra — là toàn bộ nội dung vô hình.
-*/
-test('.reveal mặc định là hiện (spec §6.2)', () => {
-  const css = read(ASSETS, 'base.css')
-  const base = css.match(/\.reveal\s*\{([^}]*)\}/)
-  assert.ok(base, 'không tìm thấy rule .reveal')
-  assert.match(base[1], /opacity:\s*1/, '.reveal phải mặc định opacity: 1')
-})
+  Quét toàn bộ base.css, mọi rule `.reveal { ... }` — không chỉ rule ĐẦU TIÊN
+  (regex không global sẽ bỏ sót rule thứ hai) và không chỉ phần văn bản TRƯỚC
+  một mốc cố định như @supports (một rule `.reveal { opacity: 0 }` chèn vào
+  SAU @supports nhưng vẫn ngoài mọi nhánh motion sẽ lọt qua kiểu kiểm bằng
+  vị trí). Bài test cũ (hai bài, gộp lại đây) khẳng định "trạng thái ẩn chỉ
+  nằm trong nhánh @supports" nhưng thực ra .js-reveal { opacity: 0 } NẰM
+  NGOÀI @supports — đó là THIẾT KẾ ĐÚNG (xem chú thích ngay dưới), không
+  phải lỗi, nên tên cũ nói sai với code.
 
-test('trạng thái ẩn chỉ nằm trong nhánh @supports', () => {
+  Điều kiện thật cần canh: `.reveal` ở top-level (ngoài mọi @media) phải mặc
+  định opacity: 1, và bất cứ rule `.reveal` nào có opacity: 0 thì bắt buộc
+  phải nằm lồng trong nhánh @media (prefers-reduced-motion: no-preference) —
+  không được có đường dẫn nào tới nội dung ẩn vĩnh viễn nằm ngoài nhánh đó.
+
+  (.js-reveal là selector KHÁC — nhánh dự phòng main.js chỉ gắn khi trình
+  duyệt không hỗ trợ @supports (animation-timeline: view()). Nó đứng ngoài
+  @supports nhưng vẫn lồng trong @media (prefers-reduced-motion: no-prefer-
+  ence) nên không vi phạm luật "mặc định là hiện": khi JS không chạy để gắn
+  class .js-reveal, phần tử không bao giờ mang class đó nên không bao giờ
+  nhận opacity: 0. Nếu ai "sửa" test này để đòi .js-reveal nằm trong
+  @supports thì JS fallback sẽ hết chỗ đứng — @supports chỉ chạy đúng khi
+  trình duyệt CÓ animation-timeline, trái ngược mục đích nhánh JS.)
+*/
+function findRevealRules(cssText) {
+  // Bóc comment /* ... */ trước — nếu không, text comment ngay trước một
+  // selector bị gộp vào buf và dính luôn vào selector (vd ".reveal" đọc
+  // thành "/* ... */\n.reveal"), làm so khớp selector === '.reveal' trật.
+  const stripped = cssText.replace(/\/\*[\s\S]*?\*\//g, '')
+  const NO_PREF_MEDIA = /^@media\s*\(\s*prefers-reduced-motion\s*:\s*no-preference\s*\)$/
+  const rules = []
+  const stack = []
+  let buf = ''
+  for (let i = 0; i < stripped.length; i++) {
+    const ch = stripped[i]
+    if (ch === '{') {
+      const selector = buf.trim()
+      const parent = stack[stack.length - 1]
+      const insideNoPreference = NO_PREF_MEDIA.test(selector) || Boolean(parent?.insideNoPreference)
+      stack.push({ selector, body: '', insideNoPreference })
+      buf = ''
+      continue
+    }
+    if (ch === '}') {
+      const frame = stack.pop()
+      if (frame) {
+        frame.body += buf
+        if (frame.selector === '.reveal') rules.push(frame)
+      }
+      buf = ''
+      continue
+    }
+    buf += ch
+  }
+  return rules
+}
+
+test('.reveal: mặc định là hiện trên toàn bộ base.css, mọi opacity:0 đều nằm trong nhánh motion (spec §6.2)', () => {
   const css = read(ASSETS, 'base.css')
-  const idx = css.indexOf('@supports (animation-timeline')
-  assert.ok(idx > -1, 'thiếu nhánh @supports (animation-timeline: view())')
-  const before = css.slice(0, idx)
-  assert.doesNotMatch(before, /\.reveal[^{]*\{[^}]*opacity:\s*0/,
-    'có đường dẫn tới nội dung ẩn nằm ngoài nhánh @supports')
+  const rules = findRevealRules(css)
+  assert.ok(rules.length > 0, 'không tìm thấy rule .reveal nào trong base.css')
+
+  const top = rules.find((r) => !r.insideNoPreference)
+  assert.ok(top, 'thiếu rule .reveal ở top-level (ngoài mọi @media)')
+  assert.match(top.body, /opacity:\s*1/, '.reveal top-level phải mặc định opacity: 1')
+
+  for (const rule of rules) {
+    if (/opacity:\s*0/.test(rule.body)) {
+      assert.ok(rule.insideNoPreference,
+        'có rule .reveal với opacity: 0 nằm ngoài @media (prefers-reduced-motion: no-preference) — đường dẫn tới nội dung ẩn vĩnh viễn')
+    }
+  }
 })
 
 /* Spec §3.4: biên độ tương phản cỡ chữ là đòn bẩy luxury không tốn gì */
