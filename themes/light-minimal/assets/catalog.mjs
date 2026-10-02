@@ -64,9 +64,10 @@ export function priceLabel(product) {
   Trang chủ không còn chế độ full catalog (spec §7.3), nên 12 SKU này LÀ
   toàn bộ cửa hàng. Thứ tự trong mảng là thứ tự hiển thị.
 
-  Mọi ảnh 01 và 02 của 12 SKU này đã được soi bằng mắt ngày 02-03/10/2026,
-  không có watermark AURA TUMBLER, không có logo/tên đội. Kết quả đầy đủ ở
-  spec §5.2. Thêm SKU vào đây mà chưa soi ảnh là đưa rủi ro IP lên mặt tiền.
+  Mọi ảnh 01 và 02 của 12 SKU này đã được soi bằng mắt ngày 02-03/10/2026:
+  không ảnh nào có watermark AURA TUMBLER. Kết quả đầy đủ, gồm một ngoại lệ
+  đã chấp nhận ở dòng Shoes, ghi tại spec §5.2 và §10.1. Thêm SKU vào đây mà
+  chưa soi ảnh là đưa rủi ro IP lên mặt tiền.
 
   KHÔNG đặt danh sách này trong products.json — file đó sinh ra từ CSV bởi
   scripts/build-products.mjs và sẽ bị ghi đè.
@@ -81,10 +82,12 @@ export const CURATED = [
   /*
     Shoes — cả 3 SKU của dòng này, không có lựa chọn khác.
 
-    CẢNH BÁO, chưa xử lý xong: ảnh 01 của cả ba mang logo đội phóng lớn làm
-    tranh tường, tức không qua được gate §5.2. Ảnh 02 và 03 của cả ba đều
-    sạch. Dòng này chỉ gỡ được khi thẻ sản phẩm cho phép chọn ảnh chính khác
-    01 — quyết định đó nằm ngoài task tuyển SKU. Chi tiết ở spec §5.2.1.
+    Ảnh 01 của cả ba có logo đội phóng lớn làm tranh tường ở hậu cảnh, tức
+    không qua gate §5.2. Ảnh 02 và 03 của cả ba đều sạch, nên đổi ảnh chính
+    là gỡ được. Chủ store được trình bày cả phương án đó lẫn phương án bỏ
+    dải Shoes, và chọn giữ nguyên ảnh 01 ngày 03/10/2026. Đây là rủi ro đã
+    cân nhắc và chấp nhận, không phải thứ bị bỏ sót — đừng "sửa" nó mà
+    không đọc spec §10.1 trước.
   */
   'SNK-20260923-XI-009', 'SNK-20260923-XI-010', 'SNK-20260923-XI-011',
 ]

@@ -435,6 +435,18 @@ Bốn test sẽ vỡ. Cả bốn vỡ **có chủ đích** — chúng đang canh
 
 Hệ quả kéo theo, cần biết trước khi mở bán: 53 SKU đó không có đường nội bộ nào trỏ tới, nên công cụ tìm kiếm khó khám phá ra chúng. Spec 29/09 đặt cược vào `SEO Title` mang tên đội đầy đủ để truy vấn kiểu "Cowboys tumbler" đáp thẳng xuống PDP — cược đó giờ là **đường duy nhất** tới 53 SKU, không còn là đường dự phòng. Và gap §8.3 mục 2 ghi `SEO Description` đang trống 100%.
 
+**Ba ảnh `01` của dòng Shoes không qua gate §5.2 — rủi ro đã chấp nhận.** Cả `SNK-20260923-XI-009`, `-010` và `-011` đều có logo đăng ký của đội phóng lớn làm tranh tường ở hậu cảnh; `XI-009` còn thêm biển `EST. 1946`. Đây đúng loại vi phạm spec 01/10 §8.2 nêu đích danh. Dòng này chỉ có ba SKU nên không thay được, và lối thoát `NO_SWAP` không dùng được vì nó xử lý chiều `01` sạch / `02` dính, còn đây là chiều ngược lại.
+
+Ảnh `02` **và** `03` của cả ba đều sạch, nên phương án gỡ tồn tại và rẻ: thêm một map `PRIMARY_INDEX` cạnh `NO_SWAP` để thẻ chọn ảnh chính khác `01`. Phương án đó cùng phương án bỏ hẳn dải Shoes đều đã được trình bày kèm đánh đổi; chủ store chọn **giữ nguyên ảnh `01`** ngày 03/10/2026. Ghi lại để sau này không ai tưởng đây là sơ suất, và để ai muốn đảo quyết định thì biết đúng một map là đủ.
+
+**Tên giải và tên đội nằm trong đường dẫn ảnh — gap chặn launch, chưa lấp.** 59 trên 65 SKU có đường dẫn ảnh dạng `/products/Backpack/NFL/NFL-Dallas-Cowboys/...`, và đường dẫn đó đi thẳng vào thuộc tính `src` của HTML trang chủ lẫn PDP. Sáu SKU sạch là đúng sáu tumbler `Halloween-General` (`TUM-20260923-XI-001` tới `-006`), và **không SKU nào trong số đó nằm trong danh sách 12 SKU tuyển tay** — nên con số thật ở mặt tiền là **12 trên 12**, không phải một phần.
+
+Việc này phá đúng ranh giới IP mà spec 29/09 §8.5 và spec 01/10 §6 dựng lên. Hai spec đó quy định tên giải không được xuất hiện ở lớp brand và lớp điều hướng; một `src` hiển thị trong DOM, trong view-source, trong tab Network và trong log server là lớp điều hướng theo mọi nghĩa dùng được.
+
+`copy-guard.test.mjs` **không** bắt được chuyện này: nó quét file nguồn của theme (`.html`, `.js`, `.mjs`, `.css`), còn các URL này sinh ra lúc chạy từ `products.json` — dữ liệu, không phải mã. Test đi qua trong khi vấn đề vẫn còn nguyên. Đó là lý do §9 có thêm một test ghi nhận hiện trạng chốt con số 59; test đó vỡ khi ai đó đổi cấu trúc thư mục ảnh, và buộc người đổi quay lại cập nhật mục này.
+
+Chủ store quyết **không xử trong redesign này** ngày 03/10/2026: vấn đề có từ trước, nằm ngoài phạm vi trang chủ, và phải sửa một lần cho cả store — đổi tên thư mục thì phải chạy lại `scripts/build-products.mjs` và di chuyển 324 file ảnh. Nhưng nó vẫn là **gap chặn launch**, không phải nợ kỹ thuật chấp nhận được lâu dài.
+
 **Pool hero chỉ 3 frame, không dư.** Một frame nữa bị loại vì lý do gì đó thì carousel còn 2, mỏng tới mức khó gọi là carousel. Không có nguồn thay thế trong vùng sạch IP.
 
 **Danh sách 12 SKU là điểm đơn lẻ dễ hỏng.** Nó vừa là gian hàng, vừa là kết quả kiểm duyệt IP. Sửa ẩu một dòng trong đó là vừa đổi mặt tiền vừa có thể đưa ảnh chưa soi lên trang. Test §9 canh số lượng và sự tồn tại của SKU, nhưng **không** canh được ảnh có sạch hay không — cái đó chỉ mắt người làm được.
