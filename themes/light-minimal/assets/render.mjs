@@ -23,23 +23,37 @@ export function imageAlt(product, index) {
   return `${product.title ?? ''} - ${ALT_SUFFIX[index] ?? 'view'}`
 }
 
-export function cardHtml(product) {
-  const img = product.images?.[0]
+export function cardHtml(product, opts = {}) {
+  const images = product.images ?? []
   const family = displayFamily(deriveStyleFamily(product))
   const typeLabel = TYPE_LABEL[product.type] ?? product.type ?? ''
   const multiPrice = new Set((product.variants ?? []).map((v) => v.price)).size > 1
   const was = !multiPrice && product.compareAt
     ? `<s class="price__was">${formatPrice(product.compareAt)}</s>`
     : ''
-  const media = img
-    ? `<img class="card__img" src="${escapeHtml(img)}" alt="${escapeHtml(imageAlt(product, 0))}"
-           loading="lazy" decoding="async" width="1264" height="1264"
-           sizes="(min-width:1280px) 352px, (min-width:768px) 45vw, 90vw">`
+
+  const sizes = 'sizes="(min-width:1280px) 352px, (min-width:768px) 45vw, 90vw"'
+
+  const primary = images[0]
+    ? `<img class="card__img card__img--primary" src="${escapeHtml(images[0])}"
+           alt="${escapeHtml(imageAlt(product, 0))}"
+           loading="lazy" decoding="async" width="1264" height="1264" ${sizes}>`
     : `<div class="card__img card__img--empty" role="presentation"></div>`
 
+  /*
+    Ảnh 02 là bản sao trang trí của cùng một sản phẩm — alt rỗng và aria-hidden
+    để screen reader không đọc sản phẩm hai lần.
+    noSwap: SKU có ảnh 01 sạch nhưng 02 dính watermark (spec §5.2).
+  */
+  const hover = images[1] && !opts.noSwap
+    ? `<img class="card__img card__img--hover" src="${escapeHtml(images[1])}"
+           alt="" aria-hidden="true"
+           loading="lazy" decoding="async" width="1264" height="1264" ${sizes}>`
+    : ''
+
   return `
-    <a class="card reveal" href="product.html?sku=${encodeURIComponent(product.sku ?? '')}">
-      <div class="card__mat">${media}</div>
+    <a class="card reveal" href="/themes/light-minimal/product.html?sku=${encodeURIComponent(product.sku ?? '')}">
+      <div class="card__mat"><div class="card__frame">${primary}${hover}</div></div>
       <p class="card__meta label muted">${escapeHtml(typeLabel)} · ${escapeHtml(family)}</p>
       <h3 class="card__title">${escapeHtml(product.title)}</h3>
       <p class="card__price">${priceLabel(product)}${was}</p>

@@ -16,31 +16,63 @@
   .grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
 }
 
-/* ---- Thẻ Passepartout (spec §5.2) ---- */
+/* ---- Thẻ Passepartout (spec §3.1) ---- */
 .card { display: block; color: inherit; }
 
 /*
-  Lề là chính cơ chế. Khi hẹp, giảm số cột trước rồi mới giảm lề;
-  sàn tuyệt đối 16px.
+  Thẻ trắng trên trang trắng là vô hình — shadow ở đây là CHỨC NĂNG, không
+  phải trang trí. Đây đúng là thứ spec 01/10 không thể có vì Swiss cấm shadow.
 */
 .card__mat {
   padding: 1rem;
   background: var(--bg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--dur) var(--ease-lux), transform var(--dur) var(--ease-lux);
 }
 
-@media (min-width: 768px)  { .card__mat { padding: 1.5rem; } }
+@media (min-width: 768px)  { .card__mat { padding: 1.25rem; } }
 @media (min-width: 1280px) { .card__mat { padding: var(--mat); } }
+
+.card:hover .card__mat,
+.card:focus-visible .card__mat {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+/* Hai ảnh chồng đúng một ô lưới */
+.card__frame { display: grid; }
+.card__frame > * { grid-area: 1 / 1; }
 
 .card__img {
   width: 100%;
   height: auto;
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  border: 1px solid var(--border);   /* cơ chế DUY NHẤT tách ảnh khỏi nền */
+  /*
+    Viền là cơ chế DUY NHẤT tách ảnh khỏi mặt thẻ. Shadow tách THẺ khỏi TRANG,
+    nó không tách ẢNH khỏi MẶT THẺ — 11 ảnh cap nền marble vẫn tan mất nếu bỏ.
+  */
+  border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 
 .card__img--empty { background: var(--bg); }
+
+/*
+  Máy cảm ứng không có hover thật. Để display:none thì trình duyệt cũng không
+  tải ảnh 02 — vừa đúng hành vi vừa tiết kiệm băng thông.
+*/
+.card__img--hover { display: none; }
+
+@media (hover: hover) {
+  .card__img--hover {
+    display: block;
+    opacity: 0;
+    transition: opacity 400ms var(--ease-lux);
+  }
+  .card:hover .card__img--hover,
+  .card:focus-visible .card__img--hover { opacity: 1; }
+}
 
 .card__meta { margin: 0 0 var(--space-1); }
 
@@ -57,12 +89,6 @@
   margin-left: var(--space-1);
   color: var(--muted);
   text-decoration: line-through;
-}
-
-.card:hover .card__img,
-.card:focus-visible .card__img {
-  border-color: var(--accent);
-  transition: border-color var(--dur) var(--ease);
 }
 
 /* ---- Thanh facet (spec §6) ---- */

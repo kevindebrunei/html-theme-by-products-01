@@ -146,3 +146,40 @@ test('sectionsHtml: giữ nguyên html thân bài, escape tiêu đề', () => {
 test('sectionsHtml: thiếu sections thì trả chuỗi rỗng, không vỡ', () => {
   assert.equal(sectionsHtml({ ...fiveShot, sections: undefined }), '')
 })
+
+const TWO_IMG = {
+  sku: 'TUM-1', title: 'DAL Test', type: 'Tumbler', season: 'Halloween',
+  price: 49.95, compareAt: 59.95,
+  images: ['/products/a/01.webp', '/products/a/02.webp'],
+}
+
+test('cardHtml: hai ảnh chồng nhau khi SKU có ảnh 02', () => {
+  const html = cardHtml(TWO_IMG)
+  assert.match(html, /card__img--primary/)
+  assert.match(html, /card__img--hover/)
+  assert.match(html, /02\.webp/)
+})
+
+/* Ảnh hover là bản sao trang trí — screen reader không được đọc hai lần. */
+test('cardHtml: ảnh hover có alt rỗng và aria-hidden', () => {
+  const html = cardHtml(TWO_IMG)
+  const hover = html.match(/<img[^>]*card__img--hover[^>]*>/)[0]
+  assert.match(hover, /alt=""/)
+  assert.match(hover, /aria-hidden="true"/)
+})
+
+test('cardHtml: noSwap thì không render ảnh hover', () => {
+  const html = cardHtml(TWO_IMG, { noSwap: true })
+  assert.doesNotMatch(html, /card__img--hover/)
+  assert.doesNotMatch(html, /02\.webp/)
+})
+
+test('cardHtml: SKU chỉ có một ảnh thì không render ảnh hover', () => {
+  const html = cardHtml({ ...TWO_IMG, images: ['/products/a/01.webp'] })
+  assert.doesNotMatch(html, /card__img--hover/)
+})
+
+test('cardHtml: ảnh hover lazy, không chặn render', () => {
+  const hover = cardHtml(TWO_IMG).match(/<img[^>]*card__img--hover[^>]*>/)[0]
+  assert.match(hover, /loading="lazy"/)
+})
