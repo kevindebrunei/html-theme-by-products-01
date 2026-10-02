@@ -350,7 +350,7 @@ Expected: FAIL — `ENOENT: no such file or directory ... tokens.css`
   --bg: #F6F1E7;          /* kem ấm — trắng tinh làm vàng kim ngả xám */
   --fg: #14120E;          /* 16.62:1 trên --bg — AAA */
   --muted: #6B6151;       /* 5.40:1 — AA */
-  --accent: #7A5F18;      /* 5.36:1 — AA. KHÔNG dùng #C9A227 (2.15:1) */
+  --accent: #7A5F18;      /* 5.36:1 — AA. Vàng brand gốc chỉ 2.15:1 trên nền kem, không dùng được */
   --accent-fg: #FFFFFF;   /* 6.04:1 trên --accent */
   --border: #8A7C62;      /* 3.63:1 — viền là chức năng, không phải trang trí */
 
