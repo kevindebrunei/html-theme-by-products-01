@@ -117,7 +117,19 @@ Pillow 12.3.0 (có sẵn). Desktop và mobile ghép **cạnh nhau theo chiều n
 
 ### 5.4 Dò ảnh trắng
 
-Sau khi chụp, ảnh bị gắn cờ `⚠ trang có vẻ trống` trong caption nếu **dưới 40 KB** hoặc **dưới 32 màu riêng biệt**. Ngưỡng lấy từ số đo thật ở §3 (18 KB trang lỗi vs 591 KB trang thật), có biên rộng.
+Ảnh bị gắn cờ `⚠ trang có vẻ trống` nếu **bất kỳ** điều nào đúng, đo trên **từng nửa riêng** rồi lấy giá trị tệ hơn:
+
+| Chỉ số | Ngưỡng |
+|---|---|
+| Số byte | dưới 40 KB |
+| Số màu riêng biệt | dưới 32 |
+| **Tầm với của mực** — hàng pixel cuối còn khác nền, chia cho chiều cao | **dưới 0.35** |
+
+Chỉ số thứ ba được thêm **sau khi nghiệm thu bác bỏ hai chỉ số đầu**. Bản thiết kế ban đầu chỉ có byte và màu, lấy từ số đo một ảnh thô đơn lẻ (18 KB vs 591 KB ở §3). Chạy thật ca nó sinh ra để bắt — PDP thiếu `?sku=` — cho `bytes=46931` và `colors=1409`: **vượt cả hai ngưỡng, không bị gắn cờ.** Ảnh ghép còn có nav, số đếm sản phẩm và nửa mobile nên thừa sức qua mặt hai chỉ số kia.
+
+Tầm với của mực tách hai ca rất sạch: **0.158 cho trang lỗi, 0.852 cho trang đủ**. Ngưỡng 0.35 nằm giữa, cách cả hai rất xa. Tính bằng `ImageChops.difference` với nền rồi `getbbox()` — một lệnh C, không quét từng hàng.
+
+Đếm màu phải thực hiện **trước khi vẽ nhãn** lên ảnh ghép: chữ bị khử răng cưa sinh ra 93 sắc xám trên nền trắng trơn, đủ để một trang trắng trượt khỏi ngưỡng 32.
 
 Ảnh vẫn được gửi, chỉ là có cờ. Đây là ranh giới giữa hệ thống ảnh tin được và hệ thống ảnh làm người đọc tin nhầm.
 

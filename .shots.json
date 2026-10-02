@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "pages": {
+    "**/product.html": { "query": "sku=${json:products/products.json#products.0.sku}" }
+  },
+  "viewports": { "desktop": [1440, 3000], "mobile": [390, 2200] },
+  "maxShots": 4
+}
