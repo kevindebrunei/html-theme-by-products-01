@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300..700&family=Inter:wght@300..700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -23,7 +23,7 @@ h1, h2 {
   margin: 0;
 }
 
-h1 { font-size: clamp(var(--fs-7), 5vw, var(--fs-8)); }
+h1 { font-size: clamp(var(--fs-7), 6vw, var(--fs-9)); }
 h2 { font-size: clamp(var(--fs-6), 3vw, var(--fs-7)); }
 
 /* Wordmark là ngoại lệ duy nhất dùng weight 600 */
@@ -72,17 +72,63 @@ img { display: block; max-width: 100%; }
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
 
-/* Motion tier Subtle (spec §5.5) */
-.reveal {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+/*
+  Motion (spec §6.2). Luật cứng: MẶC ĐỊNH LÀ HIỆN.
+  Trạng thái ẩn chỉ tồn tại bên trong nhánh dưới. Không có đường nào dẫn tới
+  nội dung ẩn vĩnh viễn — kể cả khi JS không chạy.
+*/
+.reveal { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Chrome 115+, Safari 26+. Firefox 152 vẫn sau cờ → rơi về IntersectionObserver */
+  @supports (animation-timeline: view()) {
+    @keyframes reveal-in {
+      from { opacity: 0; transform: translateY(1.5rem); }
+      to   { opacity: 1; transform: none; }
+    }
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+      /* KHÔNG khai animation-duration — nó bị bỏ qua khi có animation-timeline */
+    }
+  }
+
+  /* Nhánh JS: main.js chỉ thêm class này khi @supports ở trên không chạy */
+  .js-reveal { opacity: 0; transform: translateY(1.5rem);
+               transition: opacity var(--dur) var(--ease-lux), transform var(--dur) var(--ease-lux); }
+  .js-reveal.is-in { opacity: 1; transform: none; }
 }
-.reveal.is-in { opacity: 1; transform: none; }
+
+/*
+  Variable Font Hover — port ý tưởng từ Fancy Components (MIT, danielpetho/fancy).
+  Chạy được là nhờ trục variable nạp ở @import đầu file.
+*/
+.hover-wght { transition: font-weight var(--dur) var(--ease-lux); }
+.hover-wght:hover, .hover-wght:focus-visible { font-weight: 600; }
+
+/*
+  Vertical Cut Reveal — port ý tưởng từ Fancy Components (MIT).
+  Bọc ngoài mang aria-label nguyên câu, các span con aria-hidden (cut-reveal.mjs).
+  animation-fill-mode backwards: trước khi delay trôi hết thì áp trạng thái from,
+  nên khi KHÔNG có animation chữ vẫn hiện bình thường.
+*/
+.cut { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.cut__in { display: inline-block; }
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes cut-up {
+    from { transform: translateY(100%); }
+    to   { transform: none; }
+  }
+  .cut__in {
+    animation: cut-up var(--dur-slow) var(--ease-lux) backwards;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; transition: none; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
