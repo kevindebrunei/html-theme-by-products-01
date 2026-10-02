@@ -7,12 +7,21 @@ import { fileURLToPath } from 'node:url'
 const ASSETS = dirname(fileURLToPath(import.meta.url))
 const THEME = join(ASSETS, '..')
 
-function themeText() {
-  const files = [
+function themeFiles() {
+  return [
     ...readdirSync(THEME).filter((f) => f.endsWith('.html')).map((f) => join(THEME, f)),
-    ...readdirSync(ASSETS).filter((f) => (f.endsWith('.js') || f.endsWith('.mjs') || f.endsWith('.css')) && !f.includes('.test.')).map((f) => join(ASSETS, f)),
+    ...readdirSync(ASSETS)
+      .filter((f) => (f.endsWith('.js') || f.endsWith('.mjs') || f.endsWith('.css')) && !f.includes('.test.'))
+      .map((f) => join(ASSETS, f)),
   ]
+}
+
+function readAll(files) {
   return files.map((f) => readFileSync(f, 'utf8')).join('\n')
+}
+
+function themeText() {
+  return readAll(themeFiles())
 }
 
 const BANNED = [
@@ -59,19 +68,6 @@ test('ghi nhận hiện trạng: 59/65 SKU có tên giải trong đường dẫn
   assert.equal(affected.length, 59, 'Số SKU dính đổi rồi — cập nhật spec §10.1 trước khi sửa số ở đây')
 })
 
-function themeFiles() {
-  return [
-    ...readdirSync(THEME).filter((f) => f.endsWith('.html')).map((f) => join(THEME, f)),
-    ...readdirSync(ASSETS)
-      .filter((f) => (f.endsWith('.js') || f.endsWith('.mjs') || f.endsWith('.css')) && !f.includes('.test.'))
-      .map((f) => join(ASSETS, f)),
-  ]
-}
-
-function readAll(files) {
-  return files.map((f) => readFileSync(f, 'utf8')).join('\n')
-}
-
 /*
   Vàng đẹp, và cái đẹp sẽ bò dần sang chỗ nó không được phép ở.
   Hàng rào phải là test chứ không phải trí nhớ (spec §2.4).
@@ -87,7 +83,7 @@ test('mã vàng duy nhất đó nằm trong tokens.css', () => {
 })
 
 /*
-  === Hàng rào vàng brand: logic thuần, tách khỏi test runner ===
+  === Hàng rào vàng brand: parser thuần, tách khỏi test runner ===
 
   Ba hàm dưới nhận một chuỗi cssText và trả về danh sách vi phạm — không
   đụng filesystem, không phụ thuộc node:test. Nhờ vậy mỗi hàm kiểm được
@@ -96,26 +92,144 @@ test('mã vàng duy nhất đó nằm trong tokens.css', () => {
   rào thật sự cắn — xanh trên file thật không chứng minh gì cả nếu chưa ai
   từng vi phạm.
 
-  Kỹ thuật dùng chung cho goldViolations/shadowViolations: quét declaration
-  bằng regex `([a-zA-Z-]+)\s*:\s*([^;{}]+)[;}]`. Lớp ký tự `[^;{}]` không
-  khớp '{', nên một selector đứng trước '{' (kể cả khi có dấu hai chấm như
-  :hover, :not(:hover)) không bao giờ bị hiểu lầm là value của declaration
-  trước nó — chỉ propery đứng NGAY TRƯỚC dấu ':' mới được coi là prop của
-  value đó. Lớp ký tự này cũng xuyên qua xuống dòng, nên value trải nhiều
-  dòng (vd. box-shadow xuống dòng rồi mới tới giá trị) vẫn được gộp đúng.
-*/
+  Vòng đời sửa lỗi của bộ này (để người sau không lặp lại):
+    1. Bản line-based đầu tiên: kiểm "dòng chứa var(--gold)" có chữ "border"
+       ở đâu đó trên CÙNG DÒNG. Lọt khi border và gold ở hai property khác
+       nhau chung một dòng; mù với declaration trải nhiều dòng; cắt khối
+       bằng split('}') nên lạc selector khi rule nằm trong @media.
+    2. Bản regex declaration ([a-zA-Z-]+)\s*:\s*([^;{}]+)[;}]: sửa được vụ
+       chung dòng và xuống dòng, nhưng vẫn báo nhầm một khai báo HỢP LỆ khi
+       chính PROPERTY của nó trải nhiều dòng (vd. "border: 1px solid\n  var
+       (--gold);" — dòng chứa var(--gold) không có property), và vẫn bị
+       '}' bên trong chuỗi (vd. content: "}") làm lạc ranh giới khối.
+    3. Bản hiện tại (parseBlocks + parseDeclarations): nhận biết dấu nháy
+       khi quét — '{', '}', ';' nằm trong "..."/'...' không được coi là ký
+       tự cấu trúc, nên content: "}" không còn cắt nhầm khối. Khối được
+       dựng bằng ngăn xếp ngoặc nhọn nên selector lấy được luôn là selector
+       thật sát nhất, kể cả khi lồng trong @media. Trong một khối, declara-
+       tion được tách theo ';' ở cấp cao nhất (cũng nhận biết dấu nháy) chứ
+       không theo dòng — nên property và value của CÙNG một khai báo luôn
+       được gộp đúng dù trải bao nhiêu dòng, theo cả hai chiều (không còn
+       báo nhầm NLẪN không còn bỏ lọt).
 
-/* Vi phạm: var(--gold) dùng trong một khai báo mà PROPERTY không phải border-*. */
+  parseBlocks(cssText) trả mảng { selector, body } cho MỌI khối {...} tìm
+  thấy, kể cả khối at-rule bọc ngoài (selector kiểu "@media (hover: hover)"
+  với body gần như rỗng) — việc lọc at-rule ra là trách nhiệm của hàm gọi.
+*/
+function parseBlocks(cssText) {
+  const blocks = []
+  const stack = []
+  let buf = ''
+  let inSingle = false
+  let inDouble = false
+  for (let i = 0; i < cssText.length; i++) {
+    const ch = cssText[i]
+    if ((inSingle || inDouble) && ch === '\\') {
+      buf += ch + (cssText[i + 1] ?? '')
+      i += 1
+      continue
+    }
+    if (ch === '"' && !inSingle) {
+      inDouble = !inDouble
+      buf += ch
+      continue
+    }
+    if (ch === "'" && !inDouble) {
+      inSingle = !inSingle
+      buf += ch
+      continue
+    }
+    if (inSingle || inDouble) {
+      buf += ch
+      continue
+    }
+    if (ch === '{') {
+      stack.push({ selector: buf, body: '' })
+      buf = ''
+      continue
+    }
+    if (ch === '}') {
+      const frame = stack.pop()
+      if (frame) {
+        frame.body += buf
+        blocks.push(frame)
+      }
+      buf = ''
+      continue
+    }
+    buf += ch
+  }
+  return blocks
+}
+
+/* Tách chuỗi theo `sep` ở cấp cao nhất — bỏ qua `sep` nằm trong "..." hoặc '...'. */
+function splitTopLevel(text, sep) {
+  const parts = []
+  let buf = ''
+  let inSingle = false
+  let inDouble = false
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i]
+    if ((inSingle || inDouble) && ch === '\\') {
+      buf += ch + (text[i + 1] ?? '')
+      i += 1
+      continue
+    }
+    if (ch === '"' && !inSingle) {
+      inDouble = !inDouble
+      buf += ch
+      continue
+    }
+    if (ch === "'" && !inDouble) {
+      inSingle = !inSingle
+      buf += ch
+      continue
+    }
+    if (inSingle || inDouble) {
+      buf += ch
+      continue
+    }
+    if (ch === sep) {
+      parts.push(buf)
+      buf = ''
+      continue
+    }
+    buf += ch
+  }
+  parts.push(buf)
+  return parts
+}
+
+/* Tách body của một khối thành các { prop, value } — bất kể trải bao nhiêu dòng. */
+function parseDeclarations(bodyText) {
+  return splitTopLevel(bodyText, ';')
+    .map((raw) => {
+      const idx = raw.indexOf(':')
+      if (idx === -1) return null
+      const prop = raw.slice(0, idx).trim()
+      const value = raw.slice(idx + 1).trim()
+      return prop ? { prop, value } : null
+    })
+    .filter(Boolean)
+}
+
+/*
+  Vi phạm: var(--gold) dùng trong một khai báo mà PROPERTY không phải một
+  property border CÓ NHẬN MÀU. border-radius/border-width/border-image/
+  border-style không nhận màu — var(--gold) ở đó vô nghĩa, không phải hợp
+  lệ, nên vẫn bị coi là vi phạm.
+*/
+const BORDER_COLOR_PROP = /^border(-(top|right|bottom|left))?(-color)?$/i
+
 export function goldViolations(cssText) {
   const violations = []
-  const declRe = /([a-zA-Z-]+)\s*:\s*([^;{}]+)[;}]/g
-  let m
-  while ((m = declRe.exec(cssText))) {
-    const prop = m[1].trim()
-    const value = m[2].trim()
-    if (!value.includes('var(--gold)')) continue
-    if (!/^border/i.test(prop)) {
-      violations.push({ prop, value })
+  for (const block of parseBlocks(cssText)) {
+    const selector = block.selector.trim()
+    for (const { prop, value } of parseDeclarations(block.body)) {
+      if (!value.includes('var(--gold)')) continue
+      if (!BORDER_COLOR_PROP.test(prop)) {
+        violations.push({ selector, prop, value })
+      }
     }
   }
   return violations
@@ -123,86 +237,77 @@ export function goldViolations(cssText) {
 
 /*
   Vi phạm: var(--gold) nằm trong một rule mà selector mang trạng thái
-  (:hover, :focus, .is-active, [aria-current], [aria-pressed]).
-
-  Để tìm selector THẬT của rule (kể cả khi rule nằm lồng trong @media),
-  đi qua cssText từng ký tự và giữ một ngăn xếp các khung { selector, body }:
-  gặp '{' thì đẩy khung mới (selector = buf tích lũy từ trước); gặp '}' thì
-  gộp nốt phần buf còn lại vào body của khung trên cùng, pop khung đó ra và
-  kiểm tra, rồi mới reset buf. Nội dung của một khung con không bao giờ lọt
-  vào body của khung cha (vì buf đã được giải phóng khi khung con pop), nên
-  selector lấy được luôn là selector sát nhất bao quanh declaration, không
-  phải at-rule bọc ngoài như "@media (hover: hover)".
+  (:hover, :focus, .is-active, [aria-current], [aria-pressed]) — bất kể
+  rule đó có lồng trong @media hay không, và bất kể trong body có chuỗi
+  chứa '}' hay ';' giả hay không (parseBlocks/splitTopLevel nhận biết dấu
+  nháy nên không bị lừa bởi những ký tự đó khi chúng nằm trong "...").
 */
+const STATE_SELECTOR = /:hover|:focus|\.is-active|\[aria-current|\[aria-pressed/i
+
 export function goldStateViolations(cssText) {
   const violations = []
-  const stack = []
-  let buf = ''
-  for (const ch of cssText) {
-    if (ch === '{') {
-      stack.push({ selector: buf, body: '' })
-      buf = ''
-    } else if (ch === '}') {
-      const frame = stack.pop()
-      if (!frame) { buf = ''; continue }
-      frame.body += buf
-      buf = ''
-      const selector = frame.selector.trim()
-      if (
-        selector &&
-        !selector.startsWith('@') &&
-        frame.body.includes('var(--gold)') &&
-        /:hover|:focus|\.is-active|\[aria-current|\[aria-pressed/i.test(selector)
-      ) {
-        violations.push({ selector, body: frame.body.trim() })
-      }
-    } else {
-      buf += ch
+  for (const block of parseBlocks(cssText)) {
+    const selector = block.selector.trim()
+    if (!selector || selector.startsWith('@') || !STATE_SELECTOR.test(selector)) continue
+    const hasGold = parseDeclarations(block.body).some((d) => d.value.includes('var(--gold)'))
+    if (hasGold) {
+      violations.push({ selector, body: block.body.trim() })
     }
   }
   return violations
 }
 
-/* Vi phạm: box-shadow hardcode, không dùng var(--shadow-*). */
+/* Vi phạm: box-shadow hardcode, không dùng var(--shadow-*) — dù value trải nhiều dòng. */
 export function shadowViolations(cssText) {
   const violations = []
-  const declRe = /([a-zA-Z-]+)\s*:\s*([^;{}]+)[;}]/g
-  let m
-  while ((m = declRe.exec(cssText))) {
-    const prop = m[1].trim()
-    const value = m[2].trim()
-    if (!/^box-shadow$/i.test(prop)) continue
-    if (!/var\(--shadow-/.test(value)) {
-      violations.push({ prop, value })
+  for (const block of parseBlocks(cssText)) {
+    const selector = block.selector.trim()
+    for (const { prop, value } of parseDeclarations(block.body)) {
+      if (!/^box-shadow$/i.test(prop)) continue
+      if (!/var\(--shadow-/.test(value)) {
+        violations.push({ selector, prop, value })
+      }
     }
   }
   return violations
 }
 
-test('var(--gold) chỉ dùng trong khai báo border (file theme thật)', () => {
-  assert.deepEqual(goldViolations(readAll(themeFiles())), [])
+test('var(--gold) chỉ dùng trong khai báo border có nhận màu (file theme thật)', () => {
+  assert.deepEqual(goldViolations(themeText()), [])
 })
 
-test('var(--gold) chỉ dùng trong khai báo border — bắt được khi border và vàng chung một dòng', () => {
+test('var(--gold) chỉ dùng trong khai báo border có nhận màu — bắt được khi border và vàng chung một dòng', () => {
   const css = '.x { border: 0; color: var(--gold); }'
   const violations = goldViolations(css)
   assert.equal(violations.length, 1, JSON.stringify(violations))
   assert.equal(violations[0].prop, 'color')
 })
 
-test('var(--gold) chỉ dùng trong khai báo border — bắt được ở background', () => {
+test('var(--gold) chỉ dùng trong khai báo border có nhận màu — bắt được ở background', () => {
   const css = '.x { background: var(--gold); }'
   assert.equal(goldViolations(css).length, 1)
 })
 
-test('var(--gold) chỉ dùng trong khai báo border — không báo nhầm border-top hợp lệ', () => {
+test('var(--gold) chỉ dùng trong khai báo border có nhận màu — không báo nhầm border-top hợp lệ', () => {
   const css = '.rule { border-top: 1px solid var(--gold); }'
   assert.deepEqual(goldViolations(css), [])
 })
 
+test('var(--gold) chỉ dùng trong khai báo border có nhận màu — không báo nhầm khi khai báo trải nhiều dòng', () => {
+  const css = '.facet {\n  border: 1px solid\n    var(--gold);\n}'
+  assert.deepEqual(goldViolations(css), [], 'Khai báo border hợp lệ, chỉ vì xuống dòng không được tính là vi phạm')
+})
+
+test('var(--gold) chỉ dùng trong khai báo border có nhận màu — bắt được ở border-radius (không nhận màu)', () => {
+  const violations = goldViolations('.x { border-radius: var(--gold); }')
+  assert.equal(violations.length, 1, JSON.stringify(violations))
+  const widthViolations = goldViolations('.x { border-width: var(--gold); }')
+  assert.equal(widthViolations.length, 1, JSON.stringify(widthViolations))
+})
+
 test('var(--gold) không nằm trên selector trạng thái (file theme thật)', () => {
-  const cssOnly = themeFiles().filter((f) => f.endsWith('.css'))
-  assert.deepEqual(goldStateViolations(readAll(cssOnly)), [])
+  const cssOnly = readAll(themeFiles().filter((f) => f.endsWith('.css')))
+  assert.deepEqual(goldStateViolations(cssOnly), [])
 })
 
 test('var(--gold) không nằm trên selector trạng thái — bắt được khi rule nằm trong @media (hover: hover)', () => {
@@ -217,13 +322,20 @@ test('var(--gold) không nằm trên selector trạng thái — bắt được �
   assert.equal(goldStateViolations(css).length, 1)
 })
 
+test('var(--gold) không nằm trên selector trạng thái — bắt được dù body có dấu "}" giả bên trong chuỗi', () => {
+  const css = '.badge:hover::after { content: "}"; border: 1px solid var(--gold); }'
+  const violations = goldStateViolations(css)
+  assert.equal(violations.length, 1, JSON.stringify(violations))
+  assert.equal(violations[0].selector, '.badge:hover::after')
+})
+
 /*
   Shadow được phép từ 02/10/2026, nhưng giá trị thật chỉ sống ở tokens.css.
   Rải rác box-shadow hardcode là cách một hệ thị giác mất kiểm soát.
 */
 test('box-shadow ngoài tokens.css phải dùng var(--shadow-*) (file theme thật)', () => {
-  const nonTokens = themeFiles().filter((f) => !f.endsWith('tokens.css'))
-  assert.deepEqual(shadowViolations(readAll(nonTokens)), [])
+  const nonTokens = readAll(themeFiles().filter((f) => !f.endsWith('tokens.css')))
+  assert.deepEqual(shadowViolations(nonTokens), [])
 })
 
 test('box-shadow ngoài tokens.css phải dùng var(--shadow-*) — bắt được khi giá trị xuống dòng', () => {
