@@ -2,7 +2,10 @@
   render.mjs — hàm thuần trả chuỗi HTML. Không chạm DOM.
   Tách khỏi main.js để test được bằng node:test mà không cần jsdom.
 */
-import { TYPE_LABEL, formatPrice, priceLabel, deriveStyleFamily, displayFamily } from './catalog.mjs'
+import {
+  TYPE_ORDER, TYPE_LABEL, formatPrice, priceLabel,
+  deriveStyleFamily, displayFamily, curatedByType, NO_SWAP,
+} from './catalog.mjs'
 
 export function escapeHtml(s) {
   return String(s ?? '')
@@ -85,4 +88,40 @@ export function sectionsHtml(product) {
       <h2 class="pdp__heading">${escapeHtml(s.heading)}</h2>
       <div class="pdp__body">${s.html ?? ''}</div>
     </section>`).join('')
+}
+
+/*
+  navHtml — markup dùng chung cho nav header/footer ở cả trang chủ lẫn PDP.
+  `hrefFor(type)` để nơi gọi quyết định neo trỏ đi đâu (neo cuộn `#shop-x`
+  trên trang chủ, path tuyệt đối `/themes/light-minimal/index.html#shop-x`
+  trên PDP) — logic sinh danh sách 4 dòng và nhãn thì dùng chung một chỗ.
+
+  KHÔNG in số đếm cạnh tên dòng. Trang chủ không còn chế độ full catalog
+  (spec §7.3), mỗi dòng chỉ render 3/12 SKU tuyển tay qua curatedByType —
+  đếm theo toàn catalog (`byType(...).length`) là một con số nói dối hiện
+  trên mọi lần tải trang. "3" lặp ở cả bốn mục cũng không mang thông tin gì
+  hơn. Bỏ hẳn số là lựa chọn trung thực duy nhất không trông như lỗi hiển thị.
+*/
+export function navHtml(hrefFor) {
+  return TYPE_ORDER.map((t) =>
+    `<li><a class="hover-wght" href="${hrefFor(t)}">${TYPE_LABEL[t]}</a></li>`
+  ).join('')
+}
+
+export const GRID_EMPTY_MESSAGE = 'These Editions are temporarily unavailable — please check back soon.'
+
+/*
+  gridHtml — markup cho một dải preview trên trang chủ.
+
+  loadProducts() (main.js) nuốt lỗi mạng và trả về [] khi cả hai URL đều
+  hỏng; khi đó curatedByType rỗng cho mọi dòng. Bản main.js cũ có
+  #gridEmpty cho đúng tình huống này; bản 4-dải bỏ hẳn mà không thay bằng
+  gì — lưới trống trơn không một chữ giải thích, chỉ có console.error mà
+  người dùng không bao giờ thấy. Khôi phục trạng thái rỗng ở đây để không
+  lặp lại hồi quy đó.
+*/
+export function gridHtml(products, type) {
+  const items = curatedByType(products, type)
+  if (items.length === 0) return `<p class="muted grid__empty">${GRID_EMPTY_MESSAGE}</p>`
+  return items.map((p) => cardHtml(p, { noSwap: NO_SWAP.has(p.sku) })).join('')
 }

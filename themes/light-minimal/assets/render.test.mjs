@@ -1,7 +1,15 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { escapeHtml, imageAlt, cardHtml, galleryHtml, sectionsHtml } from './render.mjs'
-import { STYLE_FAMILY } from './catalog.mjs'
+import { readFileSync } from 'node:fs'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { escapeHtml, imageAlt, cardHtml, galleryHtml, sectionsHtml, navHtml, gridHtml, GRID_EMPTY_MESSAGE } from './render.mjs'
+import { STYLE_FAMILY, TYPE_ORDER, sectionId } from './catalog.mjs'
+
+const HERE = dirname(fileURLToPath(import.meta.url))
+const PRODUCTS = JSON.parse(
+  readFileSync(join(HERE, '..', '..', '..', 'products', 'products.json'), 'utf8')
+).products
 
 const product = {
   sku: 'TUM-20260923-UY-009',
@@ -177,4 +185,53 @@ test('cardHtml: SKU chỉ có một ảnh thì không render ảnh hover', () =>
 test('cardHtml: ảnh hover lazy, không chặn render', () => {
   const hover = cardHtml(TWO_IMG).match(/<img[^>]*card__img--hover[^>]*>/)[0]
   assert.match(hover, /loading="lazy"/)
+})
+
+/*
+  Trang chủ không còn chế độ full catalog (spec §7.3) — mỗi dòng chỉ render
+  3/12 SKU tuyển tay qua curatedByType. Đếm theo toàn catalog cạnh tên dòng
+  là một con số nói dối hiện trên mọi lần tải trang (fix7 mục 1).
+*/
+test('navHtml: đủ 4 dòng theo TYPE_ORDER, không in số đếm nào', () => {
+  const html = navHtml((t) => `#${sectionId(t)}`)
+  for (const t of TYPE_ORDER) {
+    assert.ok(html.includes(sectionId(t)), `thiếu neo cho ${t}`)
+  }
+  assert.doesNotMatch(html, /<span class="muted">/, 'nav không được bọc số đếm')
+  assert.doesNotMatch(html, /\d/, 'nav không được chứa chữ số nào — mọi con số >3 đều là nói dối, "3" lặp 4 lần thì vô nghĩa')
+})
+
+test('navHtml: hrefFor quyết định neo, không hardcode trang chủ hay PDP', () => {
+  const html = navHtml((t) => `/themes/light-minimal/index.html#${sectionId(t)}`)
+  assert.match(html, /href="\/themes\/light-minimal\/index\.html#shop-tumbler"/)
+})
+
+/*
+  gridHtml — hồi quy fix7 mục 5: loadProducts() nuốt lỗi mạng và trả [] khi
+  cả hai URL đều hỏng, curatedByType rỗng cho mọi dòng. Bản cũ có #gridEmpty
+  cho đúng tình huống này; bản 4-dải bỏ hẳn mà không thay bằng gì.
+*/
+test('gridHtml: dòng rỗng hiện thông báo, không phải lưới trống trơn', () => {
+  const html = gridHtml([], 'Tumbler')
+  assert.match(html, /grid__empty/)
+  assert.ok(html.includes(GRID_EMPTY_MESSAGE))
+})
+
+test('gridHtml: thông báo rỗng không chứa cụm bị chặn hay tên giải', () => {
+  const html = gridHtml([], 'Cap').toLowerCase()
+  for (const phrase of [
+    'officially licensed', 'official', 'licensed', 'authentic', 'genuine',
+    'must-have', 'perfect gift for any fan',
+  ]) {
+    assert.equal(html.includes(phrase), false, `thông báo rỗng chứa cụm bị cấm: "${phrase}"`)
+  }
+  for (const league of ['nfl', 'nba', 'mlb', 'wwe']) {
+    assert.equal(new RegExp(`\\b${league}\\b`, 'i').test(html), false, `thông báo rỗng chứa tên giải: ${league}`)
+  }
+})
+
+test('gridHtml: có sản phẩm tuyển tay thì render đủ thẻ, không hiện thông báo rỗng', () => {
+  const html = gridHtml(PRODUCTS, 'Tumbler')
+  assert.equal((html.match(/class="card reveal"/g) ?? []).length, 3)
+  assert.doesNotMatch(html, /grid__empty/)
 })

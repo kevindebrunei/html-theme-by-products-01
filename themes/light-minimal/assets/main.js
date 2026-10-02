@@ -1,6 +1,6 @@
 /* main.js — wiring DOM cho trang chủ. Logic nằm ở catalog.mjs, render.mjs, carousel.mjs. */
-import { TYPE_ORDER, TYPE_LABEL, curatedByType, NO_SWAP, sectionId } from './catalog.mjs'
-import { cardHtml, imageAlt } from './render.mjs'
+import { TYPE_ORDER, sectionId } from './catalog.mjs'
+import { gridHtml, imageAlt, navHtml } from './render.mjs'
 import { HERO_SKUS, mountCarousel } from './carousel.mjs'
 import { mountCutReveal } from './cut-reveal.mjs'
 
@@ -43,12 +43,9 @@ function startAnnouncement() {
   chứ không phải bộ lọc. Header và footer render cùng markup nên hành xử y hệt
   — control trông giống nhau thì không được cái bấm được cái không.
 */
-function renderNav(products, listEl) {
+function renderNav(listEl) {
   if (!listEl) return
-  listEl.innerHTML = TYPE_ORDER.map((t) => {
-    const n = products.filter((p) => p.type === t).length
-    return `<li><a class="hover-wght" href="#${sectionId(t)}">${TYPE_LABEL[t]} <span class="muted">${n}</span></a></li>`
-  }).join('')
+  listEl.innerHTML = navHtml((t) => `#${sectionId(t)}`)
 }
 
 /*
@@ -63,8 +60,23 @@ function observeReveal(root) {
 
   try {
     const io = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target) }
+      /*
+        try/catch ngoài hàm này chỉ bọc phần đồng bộ (tạo observer + vòng lặp
+        gắn class) — lúc trình duyệt gọi lại callback này thì hàm observeReveal
+        đã return từ lâu, lỗi ném ở đây KHÔNG rơi vào catch ngoài. Nếu không
+        bọc riêng, một lỗi giữa vòng for sẽ để các phần tử chưa xử lý kẹt ở
+        opacity: 0 vĩnh viễn — vi phạm thẳng luật "không có đường nào dẫn tới
+        nội dung ẩn vĩnh viễn" (base.css).
+      */
+      try {
+        for (const e of entries) {
+          if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target) }
+        }
+      } catch (err) {
+        /* Thà mất hiệu ứng còn hơn mất nội dung (spec §6.2 luật 1). */
+        root.querySelectorAll('.js-reveal').forEach((el) => el.classList.remove('js-reveal'))
+        io.disconnect()
+        console.error('reveal callback hỏng, hiện thẳng nội dung', err)
       }
     }, { rootMargin: '0px 0px -10% 0px' })
 
@@ -83,9 +95,7 @@ function renderSections(products) {
   for (const type of TYPE_ORDER) {
     const grid = document.querySelector(`[data-grid="${type}"]`)
     if (!grid) continue
-    grid.innerHTML = curatedByType(products, type)
-      .map((p) => cardHtml(p, { noSwap: NO_SWAP.has(p.sku) }))
-      .join('')
+    grid.innerHTML = gridHtml(products, type)
   }
   observeReveal(document.body)
 }
@@ -106,8 +116,8 @@ async function init() {
   startAnnouncement()
   document.querySelectorAll('[data-cut-reveal]').forEach(mountCutReveal)
   const products = await loadProducts()
-  renderNav(products, document.getElementById('typeNav'))
-  renderNav(products, document.getElementById('footerNav'))
+  renderNav(document.getElementById('typeNav'))
+  renderNav(document.getElementById('footerNav'))
   renderHero(products)
   renderSections(products)
 }

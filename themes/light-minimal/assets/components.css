@@ -16,6 +16,9 @@
   .grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
 }
 
+/* Thông báo khi dải rỗng (products.json không nạp được) — chiếm trọn hàng, không kẹt vào 1 cột. */
+.grid__empty { grid-column: 1 / -1; }
+
 /* ---- Thẻ Passepartout (spec §3.1) ---- */
 .card { display: block; color: inherit; }
 

@@ -1,6 +1,6 @@
 /* product.js — wiring DOM cho PDP. */
-import { TYPE_ORDER, TYPE_LABEL, byType, priceLabel, formatPrice, deriveStyleFamily, displayFamily } from './catalog.mjs'
-import { galleryHtml, sectionsHtml, escapeHtml } from './render.mjs'
+import { TYPE_LABEL, priceLabel, formatPrice, deriveStyleFamily, displayFamily, sectionId } from './catalog.mjs'
+import { galleryHtml, sectionsHtml, escapeHtml, navHtml } from './render.mjs'
 
 async function loadProducts() {
   for (const url of ['../../products/products.json', '/products/products.json']) {
@@ -12,12 +12,18 @@ async function loadProducts() {
   return []
 }
 
-function renderNav(products) {
+/*
+  Task 7 đổi index.html từ một id duy nhất (dành cho full catalog cũ) sang
+  bốn id shop-x, nhưng nav của PDP (file này) không ai đụng nên vẫn trỏ về
+  id cũ đã bị xoá — neo trỏ vào chỗ không tồn tại, bấm vào chỉ về trang chủ,
+  không cuộn tới đâu, im lặng không báo lỗi. Dùng chung navHtml với main.js
+  và sectionId để slug luôn khớp đúng id thật trong index.html, và path
+  tuyệt đối để sống được qua clean-URL host (spec §8).
+*/
+function renderNav() {
   const el = document.getElementById('typeNav')
   if (!el) return
-  el.innerHTML = TYPE_ORDER.map((t) =>
-    `<li><a href="index.html#catalog" data-type="${t}">${TYPE_LABEL[t]} <span class="muted">${byType(products, t).length}</span></a></li>`
-  ).join('')
+  el.innerHTML = navHtml((t) => `/themes/light-minimal/index.html#${sectionId(t)}`)
 }
 
 function renderVariants(product) {
@@ -47,7 +53,7 @@ function renderVariants(product) {
 
 async function init() {
   const products = await loadProducts()
-  renderNav(products)
+  renderNav()
 
   const sku = new URLSearchParams(location.search).get('sku')
   const product = products.find((p) => p.sku === sku)
