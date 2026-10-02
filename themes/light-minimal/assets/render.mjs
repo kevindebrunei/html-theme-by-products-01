@@ -1,0 +1,58 @@
+/*
+  render.mjs — hàm thuần trả chuỗi HTML. Không chạm DOM.
+  Tách khỏi main.js để test được bằng node:test mà không cần jsdom.
+*/
+import { TYPE_LABEL, formatPrice, priceLabel, deriveStyleFamily, displayFamily } from './catalog.mjs'
+
+export function escapeHtml(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+/* Hậu tố theo vị trí ảnh — sửa lỗi 324 alt trùng lặp (spec §8.3). */
+export const ALT_SUFFIX = ['front', 'detail', 'back', 'scale', 'in use']
+
+/*
+  Alt lấy từ `title` (viết tắt DAL/PHI/KC/SF), KHÔNG lấy từ `seoTitle`
+  vốn mang tên đội đầy đủ — ranh giới IP ở spec §6.
+*/
+export function imageAlt(product, index) {
+  return `${product.title ?? ''} - ${ALT_SUFFIX[index] ?? 'view'}`
+}
+
+export function cardHtml(product) {
+  const img = product.images?.[0]
+  const family = displayFamily(deriveStyleFamily(product))
+  const typeLabel = TYPE_LABEL[product.type] ?? product.type ?? ''
+  const multiPrice = new Set((product.variants ?? []).map((v) => v.price)).size > 1
+  const was = !multiPrice && product.compareAt
+    ? `<s class="price__was">${formatPrice(product.compareAt)}</s>`
+    : ''
+  const media = img
+    ? `<img class="card__img" src="${escapeHtml(img)}" alt="${escapeHtml(imageAlt(product, 0))}"
+           loading="lazy" decoding="async" width="1264" height="1264"
+           sizes="(min-width:1280px) 352px, (min-width:768px) 45vw, 90vw">`
+    : `<div class="card__img card__img--empty" role="presentation"></div>`
+
+  return `
+    <a class="card reveal" href="product.html?sku=${encodeURIComponent(product.sku ?? '')}">
+      <div class="card__mat">${media}</div>
+      <p class="card__meta label muted">${escapeHtml(typeLabel)} · ${escapeHtml(family)}</p>
+      <h3 class="card__title">${escapeHtml(product.title)}</h3>
+      <p class="card__price">${priceLabel(product)}${was}</p>
+    </a>`
+}
+
+export function facetBarHtml(counts, active = null) {
+  const total = [...counts.values()].reduce((a, b) => a + b, 0)
+  const btn = (label, n, value) => {
+    const on = (value ?? '') === (active ?? '')
+    return `<button type="button" class="facet${on ? ' is-active' : ''}" data-family="${escapeHtml(value ?? '')}" aria-pressed="${on}">${escapeHtml(label)} ${n}</button>`
+  }
+  const items = [btn('All', total, null)]
+  for (const [family, n] of counts) items.push(btn(family, n, family))
+  return items.join('')
+}
