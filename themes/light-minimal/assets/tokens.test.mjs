@@ -52,16 +52,42 @@ test('contrast: viền đạt ngưỡng non-text 3:1', () => {
     `--border chỉ đạt ${contrast(token('border'), token('bg')).toFixed(2)}:1 — ảnh nền sáng sẽ tan vào trang`)
 })
 
-test('không có token --surface: trắng trên kem chỉ 1.13:1 (spec §5.1)', () => {
+test('nền là trắng tinh (spec §2.1)', () => {
+  assert.equal(token('bg').toUpperCase(), '#FFFFFF')
+})
+
+/*
+  Mặt thẻ đúng bằng --bg; cái tách nó khỏi trang là shadow, không phải màu.
+  Giữ đúng một màu nền trên toàn trang.
+*/
+test('không có token --surface (spec §2.2)', () => {
   assert.equal(/--surface\s*:/.test(CSS), false)
 })
 
-test('không dùng vàng brand #C9A227: chỉ 2.15:1 trên nền kem (spec §5.1)', () => {
-  assert.equal(/#C9A227/i.test(CSS), false)
-})
-
-test('bo góc bằng 0 theo Minimalism & Swiss (spec §5.2)', () => {
+test('bo góc bằng 0 — góc vuông đọc đắt tiền hơn bo tròn (spec §1)', () => {
   const m = CSS.match(/--radius:\s*([^;]+);/)
   assert.ok(m, 'Không tìm thấy --radius')
   assert.match(m[1].trim(), /^0(px|rem)?$/)
+})
+
+test('có đủ hai bậc shadow', () => {
+  assert.ok(/--shadow-sm:/.test(CSS), 'thiếu --shadow-sm')
+  assert.ok(/--shadow-md:/.test(CSS), 'thiếu --shadow-md')
+})
+
+/*
+  #C9A227 chỉ 2.42:1 trên trắng — không đủ cho chữ, nút, hay bất cứ thứ gì
+  mang thông tin. Nó được phép tồn tại ĐÚNG MỘT LẦN, ở đây, làm hairline
+  trang trí. Hàng rào thật nằm ở copy-guard.test.mjs.
+*/
+test('vàng brand khai đúng một lần, trong token --gold', () => {
+  const hits = CSS.match(/#C9A227/gi) ?? []
+  assert.equal(hits.length, 1, `#C9A227 xuất hiện ${hits.length} lần trong tokens.css`)
+  assert.match(CSS, /--gold:\s*#C9A227/i)
+})
+
+test('có thang mới: --space-7, --fs-9, --ease-lux, --dur-slow', () => {
+  for (const name of ['space-7', 'fs-9', 'ease-lux', 'dur-slow']) {
+    assert.ok(new RegExp(`--${name}\\s*:`).test(CSS), `thiếu --${name}`)
+  }
 })

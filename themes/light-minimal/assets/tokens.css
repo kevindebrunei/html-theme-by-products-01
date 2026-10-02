@@ -1,22 +1,25 @@
 /*
-  Nơi DUY NHẤT chứa mã màu của theme light-minimal.
-  Mọi con số contrast dưới đây đã đo và được tokens.test.mjs canh lại.
+  Nơi DUY NHẤT chứa mã màu và giá trị shadow của theme light-minimal.
+  Mọi con số contrast dưới đây đo ngày 02/10/2026 và được tokens.test.mjs canh.
   Theme này KHÔNG có dark mode — themes/dark-maximalism giữ vai đó.
 */
 :root {
-  --bg: #F6F1E7;          /* kem ấm — trắng tinh làm vàng kim ngả xám */
-  --fg: #14120E;          /* 16.62:1 trên --bg — AAA */
-  --muted: #6B6151;       /* 5.40:1 — AA */
-  --accent: #7A5F18;      /* 5.36:1 — AA. Vàng brand gốc chỉ 2.15:1 trên nền kem, không dùng được */
+  --bg: #FFFFFF;
+  --fg: #14120E;          /* 18.71:1 — AAA */
+  --muted: #6B6151;       /* 6.08:1 — AA */
+  --accent: #7A5F18;      /* 6.04:1 — AA. Dùng cho MỌI chỉ báo trạng thái */
   --accent-fg: #FFFFFF;   /* 6.04:1 trên --accent */
-  --border: #8A7C62;      /* 3.63:1 — viền là chức năng, không phải trang trí */
+  --border: #8A7C62;      /* 4.09:1 — viền là chức năng: 11 ảnh cap nền marble
+                             chỉ ~1.1:1 so với nền trắng, không viền là tan mất */
 
-  /* KHÔNG có --surface. #FFFFFF trên --bg chỉ 1.13:1 → mặt card vô hình. */
+  /* 2.42:1 — CHỈ hairline trang trí. Cấm ở chữ, nút, trạng thái. Xem spec §2.4 */
+  --gold: #C9A227;
+
+  /* KHÔNG có --surface. Mặt thẻ đúng bằng --bg; shadow mới là thứ tách nó ra. */
 
   --font-heading: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
-  /* Type scale 12/14/16/18/24/32 + 48/64 hero */
   --fs-1: 0.75rem;
   --fs-2: 0.875rem;
   --fs-3: 1rem;
@@ -25,21 +28,27 @@
   --fs-6: 2rem;
   --fs-7: 3rem;
   --fs-8: 4rem;
+  --fs-9: 4.5rem;
 
-  /* Spacing spacious */
   --space-1: 0.5rem;
   --space-2: 1rem;
   --space-3: 1.5rem;
   --space-4: 2rem;
   --space-5: 3rem;
   --space-6: 6rem;
+  --space-7: 8rem;
 
-  /* Passepartout */
-  --mat: 2rem;            /* 32px — lề ở lưới sản phẩm */
-  --mat-hero: 4rem;       /* 64px — lề ở hero */
+  --mat: 1.5rem;          /* 24px — padding thẻ ở desktop */
+  --mat-hero: 4rem;
   --radius: 0;
   --maxw: 1200px;
 
+  /* Tủ trưng bày, không phải elevation kiểu Material: mờ rộng, alpha thấp, ngả ấm */
+  --shadow-sm: 0 1px 2px rgba(20, 18, 14, .04), 0 8px 24px rgba(20, 18, 14, .06);
+  --shadow-md: 0 2px 4px rgba(20, 18, 14, .05), 0 16px 48px rgba(20, 18, 14, .10);
+
   --dur: 350ms;
-  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);  /* xấp xỉ power1.out */
+  --dur-slow: 700ms;
+  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-lux: cubic-bezier(0.16, 1, 0.3, 1);   /* expo-out — thứ tạo cảm giác "mượt" */
 }
