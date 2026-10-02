@@ -53,6 +53,17 @@ test('cardHtml: link trỏ PDP kèm sku đã encode', () => {
   assert.ok(cardHtml(product).includes('product.html?sku=TUM-20260923-UY-009'))
 })
 
+/*
+  Path tương đối từng làm trắng cả trang trên host bật clean-URLs: chúng redirect
+  /themes/light-minimal/index.html -> /themes/light-minimal (không dấu / cuối),
+  base URL tụt một cấp và mọi asset trỏ sai. Test ở trên chỉ kiểm chuỗi
+  'product.html?sku=...' nên xanh với cả hai dạng — test này khoá tiền tố tuyệt đối.
+*/
+test('cardHtml: href dùng path tuyệt đối, không phải tương đối', () => {
+  const html = cardHtml(product)
+  assert.match(html, /href="\/themes\/light-minimal\/product\.html\?sku=/)
+})
+
 test('cardHtml: có width/height để tránh layout shift', () => {
   const html = cardHtml(product)
   assert.ok(html.includes('width="1264"'))
