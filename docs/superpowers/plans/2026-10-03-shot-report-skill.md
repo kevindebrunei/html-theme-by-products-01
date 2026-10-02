@@ -115,12 +115,12 @@ test('listPages bỏ qua file bắt đầu bằng gạch dưới', () => {
 test('pageGroupFor leo lên tới thư mục chứa html gần nhất', () => {
   const root = fixture()
   const css = join(root, 'themes', 'light-minimal', 'assets', 'tokens.css')
-  assert.equal(pageGroupFor(css), join(root, 'themes', 'light-minimal'))
+  assert.equal(pageGroupFor(css, root), join(root, 'themes', 'light-minimal'))
 })
 
 test('pageGroupFor trả null khi không có html nào trên đường leo', () => {
   const root = fixture()
-  assert.equal(pageGroupFor(join(root, 'src', 'api', 'user.js')), null)
+  assert.equal(pageGroupFor(join(root, 'src', 'api', 'user.js'), root), null)
 })
 
 test('sửa asset thì chụp mọi trang của cụm', () => {
