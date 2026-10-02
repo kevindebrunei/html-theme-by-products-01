@@ -17,9 +17,22 @@ export const HERO_SKUS = [
 
 export const AUTOPLAY_MS = 6000
 
-export function nextIndex(i, n) { return (i + 1) % n }
-export function prevIndex(i, n) { return (i - 1 + n) % n }
+export function nextIndex(i, n) { return n <= 0 ? 0 : (i + 1) % n }
+export function prevIndex(i, n) { return n <= 0 ? 0 : (i - 1 + n) % n }
 export function slideLabel(i, n) { return `Slide ${i + 1} of ${n}` }
+
+/*
+  `reduce` (prefers-reduced-motion) chỉ chi phối HÀNH VI LÚC MOUNT — không tự
+  autoplay. Nó không phải lệnh cấm người dùng: bấm Play là yêu cầu tường minh
+  và phải được tôn trọng, nên `source: 'user'` luôn thắng `reduce`.
+  Bug đã sửa: trước đây play() tự nó check `if (reduce || timer) return`,
+  nên khi reduce=true nút Play bấm vào không làm gì — nhận focus, bấm được,
+  vô tác dụng vĩnh viễn. Tách quyết định ra hàm thuần này để bắt được bằng
+  test không cần jsdom.
+*/
+export function shouldPlay(reduce, source) {
+  return source === 'user' || !reduce
+}
 
 /*
   Autoplay 6s là nội dung tự cập nhật quá 5 giây → WCAG 2.2.2 Pause, Stop, Hide.
@@ -36,6 +49,14 @@ export function mountCarousel(root, slides) {
   if (!track || !live || !dotsEl || !pauseBtn) return
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  /*
+    aria-pressed tĩnh trong index.html chọi với nhãn động Pause/Play: lúc
+    dừng, nhãn "Play" + pressed="true" đọc thành "Play, pressed" — nghe như
+    đang phát. ARIA APG khuyên không vừa đổi nhãn vừa dùng aria-pressed cho
+    nút play/pause — gỡ hẳn, để tên khả truy cập (nhãn động) tự nói đủ.
+  */
+  pauseBtn.removeAttribute('aria-pressed')
 
   track.innerHTML = slides.map((s, i) => `
     <img class="hero__img${i === 0 ? ' is-current' : ''}"
@@ -67,21 +88,23 @@ export function mountCarousel(root, slides) {
     live.textContent = announce ? slideLabel(index, slides.length) : ''
   }
 
-  function play() {
-    if (reduce || timer) return
+  /*
+    `source` cho biết lời gọi đến từ đâu: 'mount' (tự động lúc khởi tạo) hay
+    'user' (bấm nút). Chỉ 'mount' bị `reduce` chặn — xem shouldPlay().
+  */
+  function play(source) {
+    if (timer || !shouldPlay(reduce, source)) return
     timer = setInterval(() => show(nextIndex(index, slides.length), false), AUTOPLAY_MS)
     pauseBtn.textContent = 'Pause'
-    pauseBtn.setAttribute('aria-pressed', 'false')
   }
 
   function pause() {
     clearInterval(timer)
     timer = null
     pauseBtn.textContent = 'Play'
-    pauseBtn.setAttribute('aria-pressed', 'true')
   }
 
-  pauseBtn.addEventListener('click', () => (timer ? pause() : play()))
+  pauseBtn.addEventListener('click', () => (timer ? pause() : play('user')))
 
   root.querySelector('[data-carousel-prev]')?.addEventListener('click', () => {
     pause()
@@ -98,5 +121,5 @@ export function mountCarousel(root, slides) {
     show(Number(b.dataset.go), true)
   })
 
-  if (reduce) { pause() } else { play() }
+  if (shouldPlay(reduce, 'mount')) { play('mount') } else { pause() }
 }
