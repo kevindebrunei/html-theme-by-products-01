@@ -1,9 +1,18 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import {
   STYLE_FAMILY, deriveStyleFamily, displayFamily,
   byType, facetCounts, shouldRenderFacets, formatPrice, priceLabel,
+  CURATED, NO_SWAP, curatedByType, TYPE_ORDER,
 } from './catalog.mjs'
+
+const HERE = dirname(fileURLToPath(import.meta.url))
+const PRODUCTS = JSON.parse(
+  readFileSync(join(HERE, '..', '..', '..', 'products', 'products.json'), 'utf8')
+).products
 
 const tumblerHalloween = { type: 'Tumbler', season: 'Halloween', title: 'PIT Regalia - Gilded Ornament' }
 const tumblerChristmas = { type: 'Tumbler', season: 'Christmas', title: 'CHC Holiday Wrap' }
@@ -86,4 +95,48 @@ test('priceLabel: một mức giá thì hiện thẳng', () => {
 
 test('priceLabel: không có variants thì rơi về trường price', () => {
   assert.equal(priceLabel({ price: 39.95 }), '$39.95')
+})
+
+test('tuyển tay: đúng 12 SKU', () => {
+  assert.equal(CURATED.length, 12)
+})
+
+test('tuyển tay: không trùng mã', () => {
+  assert.equal(new Set(CURATED).size, 12)
+})
+
+/*
+  Danh sách tuyển tay là chỗ duy nhất trong theme mà một lỗi gõ làm biến mất
+  hẳn một sản phẩm khỏi cửa hàng — trang chủ không còn chế độ full catalog.
+*/
+test('tuyển tay: mọi SKU tồn tại trong products.json', () => {
+  const known = new Set(PRODUCTS.map((p) => p.sku))
+  for (const sku of CURATED) {
+    assert.ok(known.has(sku), `SKU không tồn tại: ${sku}`)
+  }
+})
+
+test('tuyển tay: đúng 3 SKU mỗi dòng sản phẩm', () => {
+  for (const type of TYPE_ORDER) {
+    assert.equal(curatedByType(PRODUCTS, type).length, 3, `Dòng ${type} không đủ 3`)
+  }
+})
+
+test('tuyển tay: dòng Tumbler phủ cả hai họ style', () => {
+  const families = new Set(
+    curatedByType(PRODUCTS, 'Tumbler').map((p) => displayFamily(deriveStyleFamily(p)))
+  )
+  assert.ok(families.size >= 2, `Tumbler chỉ có họ: ${[...families].join(', ')}`)
+})
+
+test('tuyển tay: NO_SWAP chỉ chứa SKU nằm trong CURATED', () => {
+  for (const sku of NO_SWAP) {
+    assert.ok(CURATED.includes(sku), `NO_SWAP có SKU ngoài danh sách: ${sku}`)
+  }
+})
+
+test('curatedByType giữ đúng thứ tự trong CURATED', () => {
+  const caps = curatedByType(PRODUCTS, 'Cap').map((p) => p.sku)
+  const expected = CURATED.filter((s) => caps.includes(s))
+  assert.deepEqual(caps, expected)
 })

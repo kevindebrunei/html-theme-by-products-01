@@ -201,6 +201,72 @@ Soi tìm **hai** thứ trong cùng một lượt:
 
 **Cờ đó để ở đâu — quan trọng.** `products/products.json` **là file sinh ra** bởi `scripts/build-products.mjs` từ CSV Shopify. Sửa tay vào đó sẽ bị ghi đè ở lần build kế tiếp và không ai nhận ra. Cờ phải nằm trong mã theme: một hằng số dạng `Set` các SKU bị loại, đặt trong `assets/catalog.mjs` cạnh danh sách 12 SKU, kèm chú thích ngày soi.
 
+**Chuẩn áp dụng — chốt trước khi soi.** Đọc nguyên văn, "logo đăng ký của đội" không kèm vị trí sẽ loại cả 65 sản phẩm: toàn bộ hàng trong kho là đồ cổ vũ mang màu và huy hiệu đội. Bể chọn ở §7.2 khi đó rỗng. Ba chứng cứ chốt lại cách hiểu hẹp hơn:
+
+1. Cả bốn ví dụ vi phạm mà spec 01/10 §8.2 nêu đích danh đều là hậu cảnh hoặc đạo cụ — `®` giữa ảnh, banner tên đội sau lưng, cờ đội sau lưng, bóng mang logo giải — không ví dụ nào là hoạ tiết in trên thân hàng.
+2. Caps và backpacks chia xấp xỉ một nửa giữa "hậu cảnh có bảng hiệu đội" và "hậu cảnh trung tính", nên tiêu chuẩn hậu cảnh đủ sức phân loại chứ không loại sạch.
+3. Quyết định: §7.2 **bắt buộc** dòng Tumbler phủ cả hai họ style, mà cả 10 tumbler Holiday Ornament đều in tên đội đầy đủ trên thân. Nếu "tên đội trên thân hàng" là tiêu chí loại thì chính yêu cầu của §7.2 tự mâu thuẫn.
+
+Vậy loại khi ảnh có: (a) chữ `AURA TUMBLER` ở bất kỳ đâu, kể cả khắc trên thân; (b) tagline của bên thứ ba; (c) ký tự `®` nhìn thấy được ở bất kỳ đâu; (d) logo hoặc tên đội đầy đủ xuất hiện dưới dạng bảng hiệu, banner, cờ, tranh tường ở hậu cảnh; (e) logo giải đấu trên đạo cụ (bóng, áo đấu). **Hoạ tiết của chính món hàng không phải tiêu chí loại.** Ảnh nhỏ làm mờ ký tự `®`, nên mọi ứng viên lọt vòng cuối đều được cắt và phóng to vùng huy hiệu trước khi kết luận.
+
+#### Kết quả soi 24 ảnh của 12 SKU tuyển tay — 02–03/10/2026
+
+| SKU | `01` | `02` | Ghi nhận |
+|---|---|---|---|
+| `TUM-20260923-XI-028` | đạt | **không đạt** | `01` nền cửa sổ gothic, trăng, lâu đài, đá tối; phóng to hai mặt thân cốc: không `AURA TUMBLER`, không `®`. `02` có áo đấu số 15 đóng khung treo tường, sách in tên đội, gối và bóng bầu dục của đội → vào `NO_SWAP` |
+| `TUM-20260923-XI-023` | đạt | **không đạt** | `01` nền lò sưởi và bokeh cây thông; phóng to quai và thân: không `®`. `02` có bóng bầu dục mang logo giải đấu, áo đấu số 13, chăn in tên đội → vào `NO_SWAP` |
+| `TUM-20260923-XI-026` | đạt | **không đạt** | `01` nền panel navy, đèn tường, cây thông; không `®`. `02` có áo đấu "LAMB 88" treo hậu cảnh → vào `NO_SWAP` |
+| `CAP-20260923-UY-021` | đạt | **không đạt** | `01` nền cúp và đá cẩm thạch, không chữ hiệu. `02` có logo sư tử của đội làm bảng hiệu trên tường, khán đài sân qua cửa kính → vào `NO_SWAP` |
+| `CAP-20260923-UY-022` | đạt | **không đạt** | `01` nền sảnh lounge, ảnh đen trắng không đọc được chi tiết. `02` có logo chữ "G" của đội trên tường, cờ hiệu trên khán đài, ảnh đội đen trắng → vào `NO_SWAP` |
+| `CAP-20260923-UY-017` | đạt | **không đạt** | `01` nền skyline đen trắng và cúp, không chữ hiệu. `02` có bảng hiệu tường mang tên đội đầy đủ và logo ba sao → vào `NO_SWAP` |
+| `BP-20260923-XI-019` | đạt | đạt | Cả hai ảnh nền khói trừu tượng và ánh vàng; phóng to huy hiệu: không `®` |
+| `BP-20260923-XI-023` | đạt | đạt | Cả hai ảnh nền đá cẩm thạch tối và ánh vàng; không `®` |
+| `BP-20260923-XI-017` | đạt | đạt | Cả hai ảnh nền đá cẩm thạch tối và ánh vàng; không `®` |
+| `SNK-20260923-XI-009` | **không đạt** | đạt | `01` có logo bầu dục của đội phóng lớn làm phông nền, thêm biển logo góc trên trái. `02` studio trơn. Xem §5.2.1 |
+| `SNK-20260923-XI-010` | **không đạt** | đạt | `01` có logo đầu đại bàng phóng lớn làm tranh tường. `02` studio trơn. Xem §5.2.1 |
+| `SNK-20260923-XI-011` | **không đạt** | đạt | `01` có logo ba sao phóng lớn làm phông nền. `02` studio trơn. Xem §5.2.1 |
+
+Sáu SKU vào `NO_SWAP`: ba tumbler và cả ba cap. Lý do giống nhau ở mọi trường hợp — ảnh `02` của hai dòng này là ảnh bối cảnh chụp trong phòng cổ vũ, dòng nào cũng vậy chứ không phải xui một vài SKU.
+
+#### 5.2.1 Dòng Shoes — chặn, không tự quyết
+
+Cả ba SKU Shoes đều có ảnh `01` không đạt, cùng một kiểu: logo đăng ký của đội phóng lớn làm tranh tường phía sau sản phẩm. Đây đúng loại vi phạm mà spec 01/10 §8.2 nêu — "banner tên đội ở hậu cảnh", "cờ đội ở hậu cảnh" — chỉ khác là to hơn.
+
+Dòng này có **đúng ba** SKU nên không có cái thay thế. Lối thoát ở §5.2 cũng không dùng được: lối thoát đó xử lý `01` sạch / `02` dính, còn đây là chiều ngược lại.
+
+Hai điều đã kiểm và không còn phải đoán:
+
+- Ảnh `02` của cả ba SKU đều sạch — studio trơn, hoạ tiết chỉ nằm trên giày.
+- Ảnh `03` của cả ba cũng sạch — macro cận cảnh, hậu cảnh xoá phông.
+
+Nên dòng Shoes gỡ chặn được bằng một quyết định duy nhất: **cho phép thẻ sản phẩm chọn ảnh chính khác `01`**. Quyết định đó đổi giao diện giữa §5.1 và danh sách tuyển tay, vượt phạm vi của task tuyển SKU, nên để chủ task chốt. Trong lúc chờ, ba mã Shoes vẫn nằm trong `CURATED` vì chúng *là* cả dòng — bỏ bớt hay giấu dòng đi còn sai hơn.
+
+#### Loại ở vòng sơ tuyển
+
+| SKU | Lý do loại |
+|---|---|
+| `TUM-20260923-XI-007` | `01`: hai khối `AURA TUMBLER`, thêm logo đội bóng rổ trên tường |
+| `TUM-20260923-XI-012` | `01`: `AURA TUMBLER`, banner đội, bóng mang logo đội |
+| `TUM-20260923-XI-009` | `01`: banner đội treo hậu cảnh |
+| `TUM-20260923-XI-010` | `01`: banner tên đội đầy đủ kèm ký hiệu ™ |
+| `TUM-20260923-XI-018` | `01`: bảng hiệu sân vận động ở hậu cảnh |
+| `TUM-20260923-XI-019` | `01`: logo chữ "A" của đội và bảng tên sân |
+| `TUM-20260923-XI-025`, `XI-027` | `01`: tường logo ngôi sao của đội |
+| `TUM-20260923-UY-012` | `01`: banner đội và bảng tên sân |
+| `TUM-20260923-UY-014` | `01`: cờ đội treo hậu cảnh |
+| `TUM-20260923-XI-022` | `01`: ký tự `®` cạnh logo trên thân cốc, chỉ thấy khi phóng to |
+| `TUM-20260923-XI-017` | `01`: ký tự `®` cạnh logo; `02` thêm áo đấu và biển cổ vũ |
+| `TUM-20260923-XI-021` | `01`: vết nghi là `®` không phân giải dứt khoát; bỏ qua vì đã đủ ứng viên sạch |
+| `TUM-20260923-XI-024` | `01` đạt, `02` có áo đấu số 24 — dự phòng hạng hai cho họ Holiday Ornament |
+| `TUM-20260923-XI-003`, `XI-004`, `XI-005` | `01` dính, kết quả đã có ở §4.1 |
+| `TUM-20260923-XI-001`, `XI-002`, `XI-006` | `01` **và** `02` đều đạt, nhưng ba mã này là ba khung của hero §4.2. Dùng lại ở dải preview sẽ lặp ảnh ngay trong một màn hình, nên nhường chỗ cho tumbler khác |
+| `CAP-20260923-UY-016`, `UY-018`, `UY-023`, `UY-024`, `UY-025`, `UY-026` | `01`: logo đội trên tường, trong tủ trưng bày, hoặc bảng hiệu |
+| `CAP-20260923-UY-019` | `01`: ảnh cầu thủ mặc áo đấu đóng khung treo tường |
+| `CAP-20260923-UY-020` | `01` đạt, `02` dính — dự phòng hạng hai cho dòng Cap |
+| `BP-20260923-XI-018` | `01`: logo đội trên tường, mũ bảo hiểm vàng, và bóng bầu dục mang logo giải đấu |
+| `BP-20260923-XI-020`, `XI-021`, `XI-022` | `01`: logo hoặc chữ hiệu đội trên tường |
+| `BP-20260923-XI-024` | Hậu cảnh đạt cả hai ảnh, nhưng in tên đội đầy đủ trên thân túi — dự phòng hạng hai |
+
 Kết quả soi — cả 24 ảnh, đạt hay không đạt, lý do loại — phải ghi vào spec này, không để trong đầu người làm.
 
 ---
