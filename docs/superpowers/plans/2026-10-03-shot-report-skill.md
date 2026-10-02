@@ -75,7 +75,7 @@
 mkdir -p ~/.claude/skills/shot-report/lib ~/.claude/skills/shot-report/tests
 cd ~/.claude/skills/shot-report
 git init -q
-printf 'node_modules/\n*.log\n' > .gitignore
+printf 'node_modules/\n*.log\n.superpowers/\n' > .gitignore
 git add .gitignore && git commit -q -m "chore: khởi tạo gói shot-report"
 ```
 
@@ -1576,8 +1576,10 @@ Ca 3 cần chủ repo xác nhận bằng mắt trên điện thoại — agent k
 
 - [ ] **Step 7: Chạy toàn bộ test gói**
 
-Run: `cd ~/.claude/skills/shot-report && node --test tests/`
+Run: `cd ~/.claude/skills/shot-report && node --test tests/*.test.mjs`
 Expected: PASS — tổng `# pass 33`, `# fail 0`
+
+Dùng dạng glob, **không** dùng `node --test tests/`: trên Node v24.14.1 ở máy này dạng thư mục cố nạp `tests` như một module và chết với `MODULE_NOT_FOUND`.
 
 - [ ] **Step 8: Commit repo theme**
 
