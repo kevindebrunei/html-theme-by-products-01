@@ -66,7 +66,7 @@
 - Consumes: không có (task đầu)
 - Produces:
   - `listPages(dirAbs) → string[]` — tên file `*.html` chụp được trong đúng một thư mục, đã sắp xếp
-  - `pageGroupFor(fileAbs) → string|null` — thư mục cụm trang gần nhất, leo ngược lên
+  - `pageGroupFor(fileAbs, stopAt) → string|null` — thư mục cụm trang gần nhất, leo ngược lên nhưng **không vượt `stopAt`** (gốc repo). `stopAt` bắt buộc: thiếu nó, hàm leo tới gốc ổ đĩa và nhặt phải html ngoài repo, thủng tính tự khoá van của §4.
   - `pagesToShoot(editedRelPaths, repoRoot, { maxShots = 4 }) → { pages: string[], truncated: number }` — `pages` là đường dẫn tương đối repoRoot, dùng `/`
 
 - [ ] **Step 1: Khởi tạo thư mục gói và git**
@@ -1577,7 +1577,7 @@ Ca 3 cần chủ repo xác nhận bằng mắt trên điện thoại — agent k
 - [ ] **Step 7: Chạy toàn bộ test gói**
 
 Run: `cd ~/.claude/skills/shot-report && node --test tests/*.test.mjs`
-Expected: PASS — tổng `# pass 33`, `# fail 0`
+Expected: PASS — tổng `# pass 35`, `# fail 0`
 
 Dùng dạng glob, **không** dùng `node --test tests/`: trên Node v24.14.1 ở máy này dạng thư mục cố nạp `tests` như một module và chết với `MODULE_NOT_FOUND`.
 

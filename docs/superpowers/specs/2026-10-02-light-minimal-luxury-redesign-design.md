@@ -462,7 +462,7 @@ Chủ store quyết **không xử trong redesign này** ngày 03/10/2026: vấn 
 Toàn bộ §8.1, §8.2, §8.3, §8.4 của spec 01/10 giữ nguyên hiệu lực **ở cấp store**. Hai gap đầu đang được lấp dần ở cấp trang chủ:
 
 - §4.1 đã soi 6 ảnh hero.
-- §5.2 sẽ soi thêm 24 ảnh của 12 SKU tuyển tay.
+- §5.2 đã soi thêm 24 ảnh của 12 SKU tuyển tay (03/10/2026), kết quả đầy đủ ở bảng trong mục đó.
 
 Tổng cộng 30 ảnh sau khi làm xong. Còn **294 ảnh chưa ai nhìn** — chúng vẫn sống ở `product.html`, nơi gallery render đủ 5 ảnh của SKU bất kỳ. Trang chủ sạch không làm store sạch.
 
