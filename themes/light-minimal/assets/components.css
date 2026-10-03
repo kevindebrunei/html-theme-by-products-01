@@ -466,5 +466,10 @@
 /* Không cần padding-block riêng: mọi .preview trong index.html đều mang luôn class .section (base.css) */
 .preview__heading { margin-bottom: var(--space-4); }
 
-/* Hairline vàng — thứ DUY NHẤT trong theme dùng var(--gold), và chỉ ở border */
+/*
+  Hairline vàng — một trong ba chỗ dùng var(--gold), cùng với viền dưới
+  .announce và hairline của .header khi cuộn qua hero. Cả ba đều là khai báo
+  border và đều thuần trang trí; vàng 2.42:1 không đủ cho thứ mang thông tin
+  (spec §2.4). Thanh .progress vì thế dùng var(--accent), không dùng vàng.
+*/
 .preview + .preview { border-top: 1px solid var(--gold); }
