@@ -113,16 +113,77 @@
 }
 
 /* ---- Announcement (spec §6) ---- */
+/* Hairline vàng (spec §7 mục 1) — trang trí thuần, border nhận màu nên hợp luật §2.4 */
 .announce {
   padding: var(--space-1) var(--space-3);
   text-align: center;
   font-size: var(--fs-1);
   letter-spacing: 0.04em;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--gold);
 }
 
 /* ---- Header ---- */
-.header { border-bottom: 1px solid var(--border); }
+/*
+  BUG THẬT đã đo được (không phải giả thuyết): .header co lại bằng cách co
+  padding-block/font-size của CHÍNH các phần tử bên trong nó. .header là
+  position: sticky — một sticky vẫn chiếm chỗ trong flow bằng đúng kích
+  thước HIỆN TẠI của chính nó, không phải kích thước "full" ban đầu. Vậy
+  khi header co lại GIỮA LÚC đang cuộn, flow phía dưới nó dịch lên theo,
+  đúng bằng chênh lệch cao full/co (~25.6px đo bằng Chrome 154 tại 1440px).
+
+  Hệ quả: bấm nav trong trang (smooth-scroll gốc trình duyệt) tính điểm đến
+  MỘT LẦN lúc bắt đầu cuộn, dựa trên layout lúc đó (header còn full). Suốt
+  quá trình cuộn, header co dần → flow dịch lên ~25.6px → điểm đến cũ lệch
+  so với đích thật → tiêu đề dải cuối cùng nằm lọt dưới header (~-25px gap,
+  đo bằng getBoundingClientRect trước/sau). Deep-link nguội (main.js,
+  scrollIntoView instant) không dính vì trình duyệt đã tự nhảy theo hash
+  TRƯỚC KHI JS chạy, lúc đó header đã co xong, không còn gì dịch chuyển
+  giữa chừng nữa — hai đường test ra hai kết quả khác nhau chỉ vì thời điểm
+  "tính đích" rơi vào hai pha khác nhau của animation, không phải vì công
+  thức sai.
+
+  Thử đầu tiên: bọc .header trong một div spacer riêng, cố định chiều cao.
+  SAI — vì div đó liền trở thành containing block của .header (sticky bị
+  giới hạn "không vượt khỏi containing block"), và containing block chỉ
+  cao 46-89px thì sticky mất gần hết quãng đường, header trôi mất khỏi màn
+  hình chỉ sau vài chục px cuộn (đo được headerBottom ra tới -2898px, tức
+  header rơi hẳn ra khỏi khung nhìn). Đã bỏ cách này.
+
+  Sửa đúng: giữ .header là con trực tiếp của <body> như cũ (containing
+  block vẫn là toàn trang, sticky không bị giới hạn quãng đường) — CHỈ khai
+  height CỐ ĐỊNH tường minh ngay trên .header (bằng đúng chiều cao ĐÃ CO,
+  khớp scroll-padding-top ở base.css, cùng ngưỡng 560px). height tường minh
+  không phụ thuộc padding/font-size bên trong .header__inner nữa → flow
+  phía dưới .header không bao giờ dịch chuyển, bất kể .header__inner co
+  giãn ra sao.
+
+  Ở đầu trang (padding/font-size còn full), nội dung bên trong CAO HƠN
+  height cố định của .header — tràn ra ngoài đáy (overflow mặc định là
+  visible), đè lên padding-block (var(--space-6) = 96px) của .hero.section
+  ngay bên dưới, một vùng trống không có nội dung thật nên không che chữ/
+  ảnh nào. Chênh lệch tối đa đo được ~25.6px, nằm gọn trong 96px đó.
+
+  Đánh đổi CHẤP NHẬN ĐƯỢC: hairline (border-bottom của .header) và .progress
+  (absolute, bottom:0 trong .header) bám theo ĐÁY HỘP CỐ ĐỊNH, không phải
+  đáy nội dung đang tràn — trong đúng quãng 0-480px đầu khi header còn to,
+  cả hai có thể nằm cao hơn vài px so với đáy chữ thật. Thuần trang trí,
+  animation-range 0-480px chỉ là một phần nhỏ của toàn trang (~3500px) nên
+  .progress ở quãng đó cũng gần như scaleX(0) — sai lệch không ai thấy
+  bằng mắt, và không phạm yêu cầu đo được nào (hairline ẩn ở đầu trang/hiện
+  sau hero; progress ~0% đầu, ~100% cuối).
+*/
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid transparent;
+  height: 89px;
+}
+
+@media (min-width: 560px) {
+  .header { height: 46px; }
+}
 
 .header__inner {
   display: flex;
@@ -134,6 +195,97 @@
 }
 
 .wordmark__co { font-size: var(--fs-1); margin-left: 0.4em; letter-spacing: 0.12em; }
+
+/*
+  Header co lại + hairline vàng hiện ra dưới nó khi cuộn qua hero (spec §6.3,
+  §7 mục 2). Thuần CSS, chạy trên compositor, không tốn JS.
+
+  animation-range 0–480px xấp xỉ chiều cao hero ở desktop (đo thật ~752px tại
+  1440px viewport) — không cần khớp tuyệt đối vì đây là hiệu ứng trang trí:
+  hoàn tất sớm/muộn vài chục px không ai nhận ra bằng mắt, và animation-fill-
+  mode "both" khoá trạng thái "to" (đã co) cho mọi vị trí cuộn xa hơn, kể cả
+  cú nhảy tức thì của scrollIntoView khi tới từ deep-link (main.js).
+
+  KHÔNG khai animation-duration — nó bị bỏ qua khi có animation-timeline
+  (xem chú thích cùng nội dung ở base.css .reveal).
+
+  border-bottom-color (không phải border/background) để hairline là MỘT
+  khai báo border nhận màu — hợp hàng rào vàng §2.4. Firefox (animation-
+  timeline sau cờ tới FF152) và prefers-reduced-motion: reduce đều rơi về
+  khai báo tĩnh border-bottom: 1px solid transparent ở trên — header đứng
+  yên ở size đầy đủ, không hairline. Trang trí thuần, thiếu thì vẫn đúng.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll(root block)) {
+    @keyframes header-hairline {
+      from { border-bottom-color: transparent; }
+      to   { border-bottom-color: var(--gold); }
+    }
+    @keyframes header-shrink {
+      from { padding-block: var(--space-2); }
+      to   { padding-block: 0.5rem; }
+    }
+    @keyframes header-wordmark-shrink {
+      from { font-size: var(--fs-5); }
+      to   { font-size: var(--fs-4); }
+    }
+
+    .header {
+      animation: header-hairline linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 480px;
+    }
+    .header__inner {
+      animation: header-shrink linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 480px;
+    }
+    .header .wordmark {
+      animation: header-wordmark-shrink linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 480px;
+    }
+  }
+}
+
+/*
+  Hairline tiến độ đọc (spec §6.3) — thanh mảnh dưới header, bề ngang lớn
+  dần theo tiến độ cuộn trang. Định vị absolute vào mép dưới .header (sticky
+  ở trên lập context định vị) nên luôn bám đúng đáy header dù header đang co
+  hay đầy đủ, không cần tính lại chiều cao bằng JS.
+
+  --accent, KHÔNG --gold: thanh này MANG THÔNG TIN (tiến độ đọc trang), vàng
+  chỉ dành cho trang trí thuần (spec §2.4). aria-hidden="true" ở markup vì
+  đây là bổ trợ thị giác, không phải nội dung.
+
+  scaleX(0) mặc định — KHÔNG phải opacity:0 — nên không phạm luật "mặc định
+  là hiện": phần tử vẫn hiện diện, chỉ co bề ngang về 0, không che hay chắn
+  gì ở trạng thái đứng yên (Firefox / reduced-motion / không @supports).
+*/
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll(root block)) {
+    @keyframes progress-scale {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+    .progress {
+      animation: progress-scale linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 100%;
+    }
+  }
+}
 
 .nav__list, .footer__list {
   display: flex;

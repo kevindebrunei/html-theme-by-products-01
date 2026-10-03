@@ -2,7 +2,28 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+/*
+  72px từng được đặt cho một header sticky CHƯA TỪNG TỒN TẠI (nợ kỹ thuật cũ).
+  Giờ header đã dính thật (components.css .header) và co lại khi cuộn qua
+  hero (spec §6.3) — bằng mắt lúc người dùng cuộn tới một neo thì header
+  LUÔN ở trạng thái đã co (animation-range hoàn tất trong hero, animation-
+  fill-mode "both" khoá trạng thái đó cho mọi vị trí xa hơn).
+
+  Đo thật bằng Chrome 154 (chromium.launch channel 'chrome'), header ở
+  trạng thái CO:
+    - ≥560px viewport: wordmark + nav vừa một hàng → 45.8px cao → 46px
+    - <560px: .header__inner (flex-wrap) xuống hai hàng ngay cả khi đã co
+      → 88.98px cao → 89px
+  560px là ngưỡng đo được, không phải breakpoint khai báo sẵn — nó rơi ra từ
+  flex-wrap tự nhiên của .header__inner theo độ dài thật của wordmark+nav,
+  không phải lựa chọn tuỳ ý. Đổi nội dung nav hoặc .wordmark thì phải đo lại
+  cả ngưỡng lẫn hai con số chiều cao này.
+*/
+html { scroll-behavior: smooth; scroll-padding-top: 89px; }
+
+@media (min-width: 560px) {
+  html { scroll-padding-top: 46px; }
+}
 
 body {
   margin: 0;

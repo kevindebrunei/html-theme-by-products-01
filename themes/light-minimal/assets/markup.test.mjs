@@ -227,3 +227,67 @@ test('wordmark dùng cùng class ở cả hai trang (hover-wght)', () => {
     assert.match(html, /class="wordmark hover-wght"/, `${page} thiếu class hover-wght trên wordmark`)
   }
 })
+
+/*
+  Task 10 (spec §6.3, §7): header dính + co khi cuộn, hairline vàng dưới
+  header, progress bar đọc trang, .announce đổi border sang vàng. Bốn test
+  tĩnh dưới đây canh từng mảnh bằng cách đọc CSS/HTML thô. Phần đo bằng px
+  THẬT (chiều cao header full/co, độ lệch neo cuộn trong ±4px, bug lệch
+  flow khi header co giữa lúc cuộn) chỉ bắt được bằng trình duyệt thật
+  (Playwright + Chrome), không lặp lại được ở test tĩnh — xem báo cáo task
+  10 (.superpowers/sdd/lm-task10-report.md) để biết số đo cụ thể.
+*/
+
+test('.header dùng position: sticky — layout, không phải motion (spec §6.3)', () => {
+  const css = read(ASSETS, 'components.css')
+  const m = css.match(/\.header\s*\{([^}]*)\}/)
+  assert.ok(m, 'không tìm thấy rule .header ở top-level')
+  assert.match(m[1], /position:\s*sticky/, '.header phải position: sticky')
+  assert.match(m[1], /top:\s*0/, '.header phải top: 0 để dính đúng mép trên')
+  /*
+    height tường minh — ĐÂY LÀ CHỖ SỬA BUG: không khai height thì padding/
+    font-size co lại bên trong (.header__inner, .wordmark) sẽ kéo chiều cao
+    CHÍNH .header xuống theo, và vì .header position: sticky vẫn chiếm chỗ
+    trong flow bằng kích thước HIỆN TẠI của nó, flow phía dưới dịch lên
+    giữa lúc cuộn — lệch neo ~25px đo được khi bấm nav trong trang (xem báo
+    cáo). height cố định cắt đứt phụ thuộc đó.
+  */
+  assert.match(m[1], /height:\s*89px/, '.header phải khai height cố định (89px <560px) — thiếu thì bug lệch neo quay lại')
+})
+
+test('scroll-padding-top khớp chiều cao header ĐÃ CO đo thật (base.css)', () => {
+  const css = read(ASSETS, 'base.css')
+  assert.match(css, /scroll-padding-top:\s*89px/,
+    'thiếu scroll-padding-top: 89px cho viewport hẹp (<560px, header co vẫn xuống 2 hàng, đo thật 88.98px)')
+  const mq = css.match(/@media\s*\(min-width:\s*560px\)\s*\{\s*html\s*\{[^}]*\}/)
+  assert.ok(mq, 'thiếu @media (min-width: 560px) chỉnh lại scroll-padding-top')
+  assert.match(mq[0], /scroll-padding-top:\s*46px/,
+    '≥560px header co vừa một hàng (đo thật 45.8px), scroll-padding-top phải là 46px')
+})
+
+test('.announce border dùng var(--gold), không còn var(--border) (spec §7 mục 1)', () => {
+  const css = read(ASSETS, 'components.css')
+  const m = css.match(/\.announce\s*\{([^}]*)\}/)
+  assert.ok(m, 'không tìm thấy rule .announce')
+  assert.match(m[1], /border-bottom:\s*1px solid var\(--gold\)/, '.announce phải có hairline vàng ở border-bottom')
+})
+
+test('.progress (hairline tiến độ đọc) dùng var(--accent), không phải var(--gold) (spec §2.4)', () => {
+  const css = read(ASSETS, 'components.css')
+  const blocks = [...css.matchAll(/\.progress\s*\{([^}]*)\}/g)]
+  assert.ok(blocks.length > 0, 'không tìm thấy rule .progress nào')
+  assert.match(blocks[0][1], /background:\s*var\(--accent\)/,
+    '.progress phải dùng var(--accent) — nó MANG THÔNG TIN (tiến độ đọc trang), không phải trang trí thuần như vàng')
+  for (const [, body] of blocks) {
+    assert.doesNotMatch(body, /var\(--gold\)/, '.progress không được dùng var(--gold) ở bất kỳ rule nào (kể cả nhánh animation)')
+  }
+})
+
+test('.progress mang aria-hidden="true" ở cả hai trang — bổ trợ thị giác, không phải nội dung', () => {
+  for (const page of ['index.html', 'product.html']) {
+    const html = read(THEME, page)
+    const m = html.match(/<div class="progress"([^>]*)>/)
+    assert.ok(m, `${page} thiếu <div class="progress">`)
+    assert.match(m[1], /aria-hidden="true"/, `${page}: .progress phải aria-hidden="true"`)
+  }
+})
