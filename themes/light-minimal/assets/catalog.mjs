@@ -115,3 +115,88 @@ export function hashSectionTarget(hash, validIds) {
   if (!id) return null
   return validIds.includes(id) ? id : null
 }
+
+export const CATALOG_DISCIPLINE = {
+  Tumbler: {
+    roman: 'I',
+    name: 'The Vessel',
+    disciplineTag: 'Edition I · The Vessel',
+    headline: '40oz Double-Wall Vacuum Steel',
+    description: 'Engineered as a ceremonial vessel for daily ritual, each 40oz Edition is cast from double-wall vacuum-insulated 304 food-grade stainless steel. A continuous 360-degree high-relief ornamental matrix wraps seamlessly around the exterior, ensuring no unadorned surface is left exposed. Designed to preserve chilled temperaments for 24 hours and piping warmth for up to 10 hours, it features an ergonomic contoured carry loop, dual-function splash-resistant lid, and an archival finish that commands architectural presence on any surface.',
+    highlights: ['SUS 304 Vacuum Steel', '360° Tactile Gilded Relief', '24h Cold / 10h Hot', 'Tapered Console Base'],
+    specs: [
+      { label: 'Capacity', value: '40 oz (approx. 1,180 ml)' },
+      { label: 'Thermal Structure', value: 'Double-wall vacuum SUS 304 stainless steel' },
+      { label: 'Insulation Rating', value: '24h chilled · 10h piping warm' },
+      { label: 'Ornamentation', value: '360° cold-cast continuous tactile relief' },
+      { label: 'Closure', value: 'Dual-function lid with splash barrier & reusable straw aperture' },
+      { label: 'Silhouette', value: '9.8" H × 3.9" Dia (Tapered 2.9" base fits standard console holders)' },
+    ],
+    care: 'Hand wash recommended with mild botanical cleanser. Avoid abrasive scourers to preserve gilded surface luster.',
+  },
+  Cap: {
+    roman: 'II',
+    name: 'The Crown',
+    disciplineTag: 'Edition II · The Crown',
+    headline: 'Six-Panel Architectural Headwear',
+    description: 'Constructed with the structural precision of bespoke millinery, The Crown is a six-panel structured silhouette tailored from a premium heavyweight wool-blend canvas. The front panel serves as an architectural plinth for deep-embossed bullion wire crest embroidery and high-density gilded metallic threadwork. Lined internally with a moisture-wicking damask satin headband and detailed with antiqued brass closure hardware, each piece offers effortless contouring while maintaining its sculpted crown geometry.',
+    highlights: ['6-Panel Structured Crown', 'Bullion Wire Crest Relief', 'Damask Satin Lining', 'Antiqued Brass Clasp'],
+    specs: [
+      { label: 'Silhouette', value: '6-panel structured crown with reinforced buckram plinth' },
+      { label: 'Material', value: 'Heavyweight wool-cotton twill with damask satin lining' },
+      { label: 'Ornamentation', value: 'High-density gilded bullion wire embroidery & crest relief' },
+      { label: 'Closure', value: 'Self-fabric tailored strap with antiqued brass tension buckle' },
+      { label: 'Ventilation', value: 'Embroidered airflow eyelets' },
+      { label: 'Sizing', value: 'Unisex Universal Fit (Circumference 56–60 cm / 22–23.6")' },
+    ],
+    care: 'Spot clean with cool water and soft cloth. Air dry on crown mold to retain sculptural architecture.',
+  },
+  Backpack: {
+    roman: 'III',
+    name: 'The Hauler',
+    disciplineTag: 'Edition III · The Hauler',
+    headline: 'Haute Utility Hauler',
+    description: 'Conceived at the intersection of haute utility and gothic relief, The Hauler is cut from high-density water-resistant canvas accented with textured pebble-grain leather panels. The front panel features a monumental crest composition bordered by gold piping and molten metallic drip accents. Internally, a multi-tiered sanctuary houses a dedicated high-density padded sleeve for laptops up to 16 inches, complemented by ergonomic dual-density padded shoulder straps engineered for balanced load distribution.',
+    highlights: ['Water-Resistant Canvas', '16" Padded Device Sanctuary', 'Antiqued Alloy Closures', 'Ergonomic Dual Harness'],
+    specs: [
+      { label: 'Material', value: 'High-density water-resistant canvas & pebble-grain trim' },
+      { label: 'Interior Sanctuary', value: 'High-density padded foam sleeve (up to 16" device)' },
+      { label: 'Hardware', value: 'Precision antiqued alloy closures & reinforced gold piping' },
+      { label: 'Ergonomics', value: 'Contoured dual-density load-bearing harness' },
+      { label: 'Organization', value: 'Multi-chamber portfolio, stationery & accessory compartments' },
+      { label: 'Scales', value: 'S (11.8"H) · M (15.7"H) · L (17.7"H)' },
+    ],
+    care: 'Wipe surface with damp microfiber cloth. Store in presentation dust cover when not in transit.',
+  },
+  Shoes: {
+    roman: 'IV',
+    name: 'The Foundation',
+    disciplineTag: 'Edition IV · The Foundation',
+    headline: 'Sculpted Luxury Footwear',
+    description: 'Sculpted as an architectural anchor for the modern silhouette, The Foundation pairs a breathable, reinforced technical upper with hand-placed gilded crest insignias and metallic seam piping. Balanced atop a lightweight MD midsole and high-abrasion zoned rubber traction pods, it delivers cloud-like comfort and athletic responsiveness wrapped in the quiet gravitas of couture footwear. Each pair is balanced with tone-on-tone laces and an ergonomic cupsole engineered for all-day composure.',
+    highlights: ['Sculpted Metallic Crest', 'Lightweight MD Midsole', 'High-Rebound Insole', 'Continental Scale EU 36–48'],
+    specs: [
+      { label: 'Upper', value: 'Engineered breathable matrix with gilded crest insignias' },
+      { label: 'Sole Architecture', value: 'Featherweight MD midsole with zoned rubber traction pods' },
+      { label: 'Insole', value: 'Ergonomic high-rebound cushioning insole' },
+      { label: 'Closure', value: 'Reinforced eyelet stay with woven tonal laces' },
+      { label: 'Profile', value: 'Low-top court silhouette (EU 36–48 true to continental scale)' },
+      { label: 'Packaging', value: 'Archival presentation casket with consignment certificate' },
+    ],
+    care: 'Brush gently with soft horsehair brush. Allow to dry naturally away from direct radiant heat.',
+  },
+}
+
+export function catalogDiscipline(type) {
+  return CATALOG_DISCIPLINE[type] ?? {
+    roman: '·',
+    name: type ?? 'Edition',
+    disciplineTag: `Edition · ${type ?? 'Artifact'}`,
+    headline: 'Gilded Archive Piece',
+    description: 'Handcrafted gilded editions cast with ceremonial gravitas and architectural restraint.',
+    highlights: ['Gilded Surface Relief', 'Archival Presentation Casket'],
+    specs: [],
+    care: 'Handle with care to preserve artisanal finish.',
+  }
+}
+

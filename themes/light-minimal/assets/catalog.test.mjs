@@ -8,6 +8,7 @@ import {
   byType, formatPrice, priceLabel,
   CURATED, NO_SWAP, curatedByType, TYPE_ORDER,
   sectionId, hashSectionTarget,
+  CATALOG_DISCIPLINE, catalogDiscipline,
 } from './catalog.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -155,3 +156,21 @@ test('hashSectionTarget: hash đúng định dạng nhưng ngoài danh sách d�
 test('hashSectionTarget: nhận hash có hoặc không có dấu #', () => {
   assert.equal(hashSectionTarget('shop-tumbler', ['shop-tumbler']), 'shop-tumbler')
 })
+
+test('catalogDiscipline: đủ 4 dòng chính với roman, name, description, specs, care', () => {
+  for (const t of TYPE_ORDER) {
+    const disc = catalogDiscipline(t)
+    assert.ok(disc.roman, `Thiếu roman cho ${t}`)
+    assert.ok(disc.name, `Thiếu name cho ${t}`)
+    assert.ok(disc.description && disc.description.length > 50, `Description quá ngắn hoặc thiếu cho ${t}`)
+    assert.ok(Array.isArray(disc.specs) && disc.specs.length >= 4, `Thiếu specs cho ${t}`)
+    assert.ok(disc.care && disc.care.length > 20, `Thiếu care cho ${t}`)
+  }
+})
+
+test('catalogDiscipline: fallback an toàn cho type lạ', () => {
+  const disc = catalogDiscipline('Unknown')
+  assert.ok(disc.description)
+  assert.equal(disc.roman, '·')
+})
+

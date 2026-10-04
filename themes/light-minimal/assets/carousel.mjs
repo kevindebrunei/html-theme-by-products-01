@@ -39,53 +39,64 @@ export function shouldPlay(reduce, source) {
   Dừng-khi-rê-chuột KHÔNG thoả: người dùng bàn phím và screen reader không rê chuột.
   Nút tạm dừng hiện rõ là bắt buộc, không phải tuỳ chọn (spec §4.3).
 */
-export function mountCarousel(root, slides) {
-  if (!root || slides.length === 0) return
+export function mountCarousel(root, slides = []) {
+  if (!root) return
 
   const track = root.querySelector('[data-carousel-track]')
   const live = root.querySelector('[data-carousel-live]')
   const dotsEl = root.querySelector('[data-carousel-dots]')
   const pauseBtn = root.querySelector('[data-carousel-pause]')
-  if (!track || !live || !dotsEl || !pauseBtn) return
+  if (!track) return
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (pauseBtn) pauseBtn.removeAttribute('aria-pressed')
 
-  /*
-    aria-pressed tĩnh trong index.html chọi với nhãn động Pause/Play: lúc
-    dừng, nhãn "Play" + pressed="true" đọc thành "Play, pressed" — nghe như
-    đang phát. ARIA APG khuyên không vừa đổi nhãn vừa dùng aria-pressed cho
-    nút play/pause — gỡ hẳn, để tên khả truy cập (nhãn động) tự nói đủ.
-  */
-  pauseBtn.removeAttribute('aria-pressed')
+  let slideEls = [...track.querySelectorAll('.hero__slide')]
+  if (slideEls.length === 0 && slides.length > 0) {
+    track.innerHTML = slides.map((s, i) => `
+      <article class="hero__slide${i === 0 ? ' is-current' : ''}" data-slide-index="${i}">
+        <div class="hero__bg">
+          <img class="hero__bg-img"
+               src="${s.src ?? s.bg}" alt="${s.alt ?? ''}"
+               width="1920" height="1080"
+               loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async">
+          <div class="hero__scrim" aria-hidden="true"></div>
+        </div>
+        <div class="wrap hero__content">
+          ${s.title ? (i === 0 ? `<h1 class="hero__title" data-cut-reveal>${s.title}</h1>` : `<h2 class="hero__title">${s.title}</h2>`) : ''}
+          ${s.cta && s.targetId ? `<a class="btn hero__cta" href="#${s.targetId}">${s.cta}</a>` : ''}
+        </div>
+      </article>`).join('')
+    slideEls = [...track.querySelectorAll('.hero__slide')]
+  }
 
-  track.innerHTML = slides.map((s, i) => `
-    <img class="hero__img${i === 0 ? ' is-current' : ''}"
-         src="${s.src}" alt="${s.alt}"
-         width="1264" height="1264"
-         loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async">`).join('')
+  const total = slideEls.length
+  if (total === 0) return
 
-  dotsEl.innerHTML = slides.map((_, i) => `
-    <button type="button" class="hero__dot" data-go="${i}"
-            aria-current="${i === 0 ? 'true' : 'false'}">
-      <span class="visually-hidden">${slideLabel(i, slides.length)}</span>
-    </button>`).join('')
+  let dots = []
+  if (dotsEl) {
+    dotsEl.innerHTML = slideEls.map((_, i) => `
+      <button type="button" class="hero__dot" data-go="${i}"
+              aria-current="${i === 0 ? 'true' : 'false'}">
+        <span class="visually-hidden">${slideLabel(i, total)}</span>
+      </button>`).join('')
+    dots = [...dotsEl.querySelectorAll('button')]
+  }
 
-  const imgs = [...track.querySelectorAll('img')]
-  const dots = [...dotsEl.querySelectorAll('button')]
   let index = 0
   let timer = null
 
   function show(i, announce) {
-    imgs[index].classList.remove('is-current')
-    dots[index].setAttribute('aria-current', 'false')
+    slideEls[index].classList.remove('is-current')
+    if (dots[index]) dots[index].setAttribute('aria-current', 'false')
     index = i
-    imgs[index].classList.add('is-current')
-    dots[index].setAttribute('aria-current', 'true')
+    slideEls[index].classList.add('is-current')
+    if (dots[index]) dots[index].setAttribute('aria-current', 'true')
     /*
       Chỉ thông báo khi người dùng tự bấm. Autoplay mà announce thì screen
       reader bị spam mỗi 6 giây (spec §4.3).
     */
-    live.textContent = announce ? slideLabel(index, slides.length) : ''
+    if (live) live.textContent = announce ? slideLabel(index, total) : ''
   }
 
   /*
@@ -94,31 +105,58 @@ export function mountCarousel(root, slides) {
   */
   function play(source) {
     if (timer || !shouldPlay(reduce, source)) return
-    timer = setInterval(() => show(nextIndex(index, slides.length), false), AUTOPLAY_MS)
-    pauseBtn.textContent = 'Pause'
+    timer = setInterval(() => show(nextIndex(index, total), false), AUTOPLAY_MS)
+    if (pauseBtn) pauseBtn.textContent = 'Pause'
   }
 
   function pause() {
     clearInterval(timer)
     timer = null
-    pauseBtn.textContent = 'Play'
+    if (pauseBtn) pauseBtn.textContent = 'Play'
   }
 
-  pauseBtn.addEventListener('click', () => (timer ? pause() : play('user')))
+  pauseBtn?.addEventListener('click', () => (timer ? pause() : play('user')))
 
   root.querySelector('[data-carousel-prev]')?.addEventListener('click', () => {
     pause()
-    show(prevIndex(index, slides.length), true)
+    show(prevIndex(index, total), true)
   })
   root.querySelector('[data-carousel-next]')?.addEventListener('click', () => {
     pause()
-    show(nextIndex(index, slides.length), true)
+    show(nextIndex(index, total), true)
   })
-  dotsEl.addEventListener('click', (e) => {
+  dotsEl?.addEventListener('click', (e) => {
     const b = e.target.closest('button[data-go]')
     if (!b) return
     pause()
     show(Number(b.dataset.go), true)
+  })
+
+  // Keyboard navigation within the carousel
+  root.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      pause()
+      show(prevIndex(index, total), true)
+    } else if (e.key === 'ArrowRight') {
+      pause()
+      show(nextIndex(index, total), true)
+    }
+  })
+
+  // Smooth scroll handler on CTA click
+  root.querySelectorAll('.hero__cta').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const targetHash = btn.getAttribute('href')
+      if (targetHash && targetHash.startsWith('#')) {
+        const targetEl = document.querySelector(targetHash)
+        if (targetEl) {
+          e.preventDefault()
+          pause()
+          history.pushState(null, '', targetHash)
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }
+    })
   })
 
   if (shouldPlay(reduce, 'mount')) { play('mount') } else { pause() }

@@ -75,6 +75,9 @@ a:focus-visible, button:focus-visible {
 img { display: block; max-width: 100%; }
 
 .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--space-3); }
+@media (max-width: 599px) {
+  .wrap { padding-inline: 1rem; }
+}
 .section { padding-block: var(--space-6); }
 
 /* Nhãn dòng sản phẩm và họ style — Inter 500, không dùng Cormorant (spec §5.4) */

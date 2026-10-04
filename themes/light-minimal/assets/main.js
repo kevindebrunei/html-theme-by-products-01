@@ -3,6 +3,8 @@ import { TYPE_ORDER, sectionId, hashSectionTarget } from './catalog.mjs'
 import { gridHtml, imageAlt, navHtml } from './render.mjs'
 import { HERO_SKUS, mountCarousel } from './carousel.mjs'
 import { mountCutReveal } from './cut-reveal.mjs'
+import { mountCartUI } from './cart.mjs'
+import { mountMenuUI } from './menu.mjs'
 
 const HALLOWEEN_CUTOFF = new Date('2026-10-09T23:59:59')
 
@@ -123,20 +125,25 @@ function scrollToHashSection() {
   el.scrollIntoView({ behavior: 'instant', block: 'start' })
 }
 
-function renderHero(products) {
+function renderHero() {
   const root = document.getElementById('heroCarousel')
   if (!root) return
-  const bySku = new Map(products.map((p) => [p.sku, p]))
-  const slides = HERO_SKUS
-    .map((sku) => bySku.get(sku))
-    .filter((p) => p?.images?.[0])
-    .map((p) => ({ src: p.images[0], alt: imageAlt(p, 0) }))
-  if (slides.length === 0) { root.hidden = true; return }
-  mountCarousel(root, slides)
+  mountCarousel(root)
+}
+
+function initHeaderScroll() {
+  const header = document.querySelector('.header')
+  if (!header) return
+  const update = () => {
+    header.classList.toggle('is-scrolled', window.scrollY > 10)
+  }
+  window.addEventListener('scroll', update, { passive: true })
+  update()
 }
 
 async function init() {
   startAnnouncement()
+  initHeaderScroll()
   document.querySelectorAll('[data-cut-reveal]').forEach(mountCutReveal)
   const products = await loadProducts()
   renderNav(document.getElementById('typeNav'))
@@ -144,6 +151,8 @@ async function init() {
   renderHero(products)
   renderSections(products)
   scrollToHashSection()
+  mountCartUI({ products })
+  mountMenuUI({ hrefFor: (t) => `#${sectionId(t)}` })
 }
 
 init()

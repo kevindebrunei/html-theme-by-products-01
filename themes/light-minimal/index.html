@@ -11,65 +11,338 @@
 </head>
 <body>
 
-<div class="announce" id="announce" role="status" aria-live="polite"></div>
 
-<header class="header">
+<header class="header header--transparent">
   <div class="wrap header__inner">
+    <button class="menu-btn" id="menuToggle" type="button" aria-label="Open menu" aria-controls="menuDrawer" aria-expanded="false">
+      <svg class="menu-btn__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3.5" y1="7" x2="20.5" y2="7"></line>
+        <line x1="3.5" y1="12" x2="20.5" y2="12"></line>
+        <line x1="3.5" y1="17" x2="20.5" y2="17"></line>
+      </svg>
+    </button>
     <a class="wordmark hover-wght" href="/themes/light-minimal/index.html">Goldbourne<span class="wordmark__co">&amp; Co.</span></a>
-    <nav class="nav" aria-label="Shop">
-      <ul class="nav__list" id="typeNav"></ul>
-    </nav>
+    <div class="header__nav-wrap">
+      <nav class="nav" aria-label="Shop">
+        <ul class="nav__list" id="typeNav"></ul>
+      </nav>
+      <button class="cart-btn" id="cartToggle" type="button" aria-label="Open cart (0 items)" aria-controls="cartDrawer" aria-expanded="false">
+        <svg class="cart-btn__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4.5 8.5h15l-1.2 12.5H5.7L4.5 8.5z"/>
+          <path d="M8.5 8.5V5.5a3.5 3.5 0 0 1 7 0v3"/>
+        </svg>
+        <span class="cart-btn__count" id="cartCount" aria-hidden="true">0</span>
+      </button>
+    </div>
   </div>
   <div class="progress" aria-hidden="true"></div>
 </header>
 
-<main>
-  <section class="hero section">
-    <div class="wrap hero__inner">
-      <div class="hero" id="heroCarousel" role="region"
+<main class="main--hero">
+  <section class="hero hero--fullwidth" id="heroCarousel" role="region"
            aria-roledescription="carousel" aria-label="Featured Editions">
-        <div class="hero__mat"><div class="hero__track" data-carousel-track></div></div>
-        <p class="visually-hidden" data-carousel-live aria-live="polite"></p>
-        <div class="hero__controls">
-          <button type="button" class="hero__btn" data-carousel-prev>Prev</button>
-          <button type="button" class="hero__btn" data-carousel-next>Next</button>
-          <button type="button" class="hero__btn" data-carousel-pause>Pause</button>
-          <div class="hero__dots" data-carousel-dots></div>
+    <div class="hero__track" data-carousel-track>
+      <!-- Slide 1: Tumblers -->
+      <article class="hero__slide is-current" data-slide-index="0" aria-label="Slide 1 of 4: Gilded Tumblers">
+        <div class="hero__bg">
+          <picture class="hero__picture">
+            <source media="(max-width: 768px)" srcset="/themes/light-minimal/assets/hero-tumbler-mobile.jpg">
+            <img class="hero__bg-img"
+                 src="/themes/light-minimal/assets/hero-tumbler.jpg"
+                 alt="Goldbourne gilded tumblers on Italian white marble"
+                 width="1920" height="1080"
+                 loading="eager" decoding="async">
+          </picture>
+          <div class="hero__scrim" aria-hidden="true"></div>
         </div>
+        <div class="wrap hero__content">
+          <h1 class="hero__title" data-cut-reveal>Team identity, rewritten in the language of a fashion house.</h1>
+          <a class="btn hero__cta" href="#shop-tumbler">Discover Tumblers</a>
+        </div>
+      </article>
+
+      <!-- Slide 2: Caps -->
+      <article class="hero__slide" data-slide-index="1" aria-label="Slide 2 of 4: Gilded Caps">
+        <div class="hero__bg">
+          <picture class="hero__picture">
+            <source media="(max-width: 768px)" srcset="/themes/light-minimal/assets/hero-cap-mobile.jpg">
+            <img class="hero__bg-img"
+                 src="/themes/light-minimal/assets/hero-cap.jpg"
+                 alt="Goldbourne structured noir cap on white gallery plinth"
+                 width="1920" height="1080"
+                 loading="lazy" decoding="async">
+          </picture>
+          <div class="hero__scrim" aria-hidden="true"></div>
+        </div>
+        <div class="wrap hero__content">
+          <h2 class="hero__title">Architectural crowns, cast with gold bullion embroidery.</h2>
+          <a class="btn hero__cta" href="#shop-cap">Discover Caps</a>
+        </div>
+      </article>
+
+      <!-- Slide 3: Backpacks -->
+      <article class="hero__slide" data-slide-index="2" aria-label="Slide 3 of 4: Gilded Backpacks">
+        <div class="hero__bg">
+          <picture class="hero__picture">
+            <source media="(max-width: 768px)" srcset="/themes/light-minimal/assets/hero-backpack-mobile.jpg">
+            <img class="hero__bg-img"
+                 src="/themes/light-minimal/assets/hero-backpack.jpg"
+                 alt="Goldbourne designer black leather backpack in sunlit white gallery"
+                 width="1920" height="1080"
+                 loading="lazy" decoding="async">
+          </picture>
+          <div class="hero__scrim" aria-hidden="true"></div>
+        </div>
+        <div class="wrap hero__content">
+          <h2 class="hero__title">Haute utility in full-grain leather and molten gold drip.</h2>
+          <a class="btn hero__cta" href="#shop-backpack">Discover Backpacks</a>
+        </div>
+      </article>
+
+      <!-- Slide 4: Shoes -->
+      <article class="hero__slide" data-slide-index="3" aria-label="Slide 4 of 4: Gilded Shoes">
+        <div class="hero__bg">
+          <picture class="hero__picture">
+            <source media="(max-width: 768px)" srcset="/themes/light-minimal/assets/hero-shoes-mobile.jpg">
+            <img class="hero__bg-img"
+                 src="/themes/light-minimal/assets/hero-shoes.jpg"
+                 alt="Goldbourne luxury leather sneaker on polished white marble pedestal"
+                 width="1920" height="1080"
+                 loading="lazy" decoding="async">
+          </picture>
+          <div class="hero__scrim" aria-hidden="true"></div>
+        </div>
+        <div class="wrap hero__content">
+          <h2 class="hero__title">Sculpted footwear elevated with signature crest hardware.</h2>
+          <a class="btn hero__cta" href="#shop-shoes">Discover Shoes</a>
+        </div>
+      </article>
+    </div>
+
+    <p class="visually-hidden" data-carousel-live aria-live="polite"></p>
+    <button type="button" class="visually-hidden" data-carousel-pause>Pause</button>
+  </section>
+
+  <!-- Section 1: Atelier Manifesto & Curatorial Triptych -->
+  <section class="section manifesto" aria-label="Atelier Manifesto">
+    <div class="wrap">
+      <div class="manifesto__intro">
+        <p class="section-tag">Atelier Provenance &middot; Curatorial Note</p>
+        <blockquote class="manifesto__quote">
+          &ldquo;Objects of daily ritual, cast with the gravitas of ceremonial plate. Team identity, rewritten in the language of a fashion house. Gilded on every side.&rdquo;
+        </blockquote>
+        <p class="manifesto__lead">
+          An ornament first, a vessel second &mdash; quiet, dark, deliberate. Every silhouette in our seasonal Editions is treated not as sports merchandise, but as high-relief jewellery engineered for permanent collection and perpetual daily communion.
+        </p>
       </div>
-      <div class="hero__text">
-        <h1 data-cut-reveal>Team identity, rewritten in the language of a fashion house.</h1>
-        <p class="hero__sub muted">Gilded on every side.</p>
-        <a class="btn" href="#shop-tumbler">View the Editions</a>
+
+      <div class="manifesto__triptych">
+        <div class="manifesto__col">
+          <span class="manifesto__num">04</span>
+          <h3 class="manifesto__heading">Curated Disciplines</h3>
+          <p class="manifesto__desc">Tumblers, Caps, Backpacks, and Footwear &mdash; each category executed under a strict architectural and gilded lexicon.</p>
+        </div>
+        <div class="manifesto__col">
+          <span class="manifesto__num">360&deg;</span>
+          <h3 class="manifesto__heading">Tactile Continuity</h3>
+          <p class="manifesto__desc">Deep relief wrapping seamlessly around every surface. No plain side is permitted to turn to the wall.</p>
+        </div>
+        <div class="manifesto__col">
+          <span class="manifesto__num">12</span>
+          <h3 class="manifesto__heading">Hand-Selected Editions</h3>
+          <p class="manifesto__desc">Strictly vetted seasonal relics and gothic crests, released in finite serial numbers with archival certification.</p>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- Catalog Section 1: Tumblers -->
   <section class="section preview" id="shop-tumbler">
     <div class="wrap">
-      <h2 class="preview__heading">Tumblers</h2>
+      <div class="preview__header">
+        <div>
+          <p class="preview__eyebrow">Edition I &middot; 40oz Double-Wall Vessels</p>
+          <h2 class="preview__heading">Tumblers</h2>
+          <p class="preview__lead">High-vacuum thermal steel enveloped in continuous gothic tracery and sculpted gold relief.</p>
+        </div>
+        <a class="preview__jump hover-wght" href="#shop-cap">Discover Caps &darr;</a>
+      </div>
       <div class="grid" data-grid="Tumbler"></div>
     </div>
   </section>
 
+  <!-- Section 2: Curated Spotlight / Feature Split-Editorial -->
+  <section class="section spotlight" aria-label="Curatorial Spotlight">
+    <div class="wrap spotlight__grid">
+      <div class="spotlight__media">
+        <div class="spotlight__frame">
+          <img class="spotlight__img"
+               src="/themes/light-minimal/assets/hero-backpack.jpg"
+               alt="Goldbourne haute utility backpack with molten gold drip ornament in white gallery"
+               width="960" height="720"
+               loading="lazy" decoding="async">
+        </div>
+      </div>
+      <div class="spotlight__content">
+        <p class="section-tag">Curatorial Spotlight &middot; Craft Study</p>
+        <h2 class="spotlight__title">Haute Utility &amp; Gilded Relics</h2>
+        <p class="spotlight__text">
+          Rather than superficial printed logos, Goldbourne &amp; Co. casts dimensional matrices of molten bullion and gilded relief. Every grain of leather, every bullion wire thread, and every curve of steel is measured against directional light to reveal an architectural silhouette.
+        </p>
+        <ul class="spotlight__specs">
+          <li class="spotlight__spec">
+            <span class="spotlight__spec-label">Matrix Depth</span>
+            <span class="spotlight__spec-value">1.2mm tactile cold-cast relief</span>
+          </li>
+          <li class="spotlight__spec">
+            <span class="spotlight__spec-label">Materials</span>
+            <span class="spotlight__spec-value">Full-grain pebble leather &amp; gilded alloy</span>
+          </li>
+          <li class="spotlight__spec">
+            <span class="spotlight__spec-label">Release Window</span>
+            <span class="spotlight__spec-value">Autumn Nocturne &amp; Holiday Editions</span>
+          </li>
+        </ul>
+        <a class="btn spotlight__cta" href="#shop-backpack">Explore Leather Goods</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Catalog Section 2: Caps -->
   <section class="section preview" id="shop-cap">
     <div class="wrap">
-      <h2 class="preview__heading">Caps</h2>
+      <div class="preview__header">
+        <div>
+          <p class="preview__eyebrow">Edition II &middot; Six-Panel Architectural Crowns</p>
+          <h2 class="preview__heading">Caps</h2>
+          <p class="preview__lead">Structured wool-blend silhouettes elevated with heavy bullion gold wire crest embroidery.</p>
+        </div>
+        <a class="preview__jump hover-wght" href="#shop-backpack">Discover Backpacks &darr;</a>
+      </div>
       <div class="grid" data-grid="Cap"></div>
     </div>
   </section>
 
+  <!-- Section 4: The Maison Standards -->
+  <section class="section standards" id="standards" aria-label="Maison Standards">
+    <div class="wrap">
+      <div class="standards__intro">
+        <p class="section-tag">Client Services &middot; Provenance</p>
+        <h2 class="standards__title">The Maison Standards</h2>
+      </div>
+      <div class="standards__grid">
+        <div class="standards__card">
+          <div class="standards__marker" aria-hidden="true">&sect; 01</div>
+          <h3 class="standards__heading">Archival Presentation Packaging</h3>
+          <p class="standards__text">
+            Every Edition is nestled in a custom matte-black rigid presentation casket, wrapped in gold-debossed archival parchment and sealed with our insignia.
+          </p>
+        </div>
+        <div class="standards__card">
+          <div class="standards__marker" aria-hidden="true">&sect; 02</div>
+          <h3 class="standards__heading">Insured Courier Dispatch</h3>
+          <p class="standards__text">
+            Complimentary white-glove, insured courier transit on all Editions. Each consignment is tracked with direct provenance documentation from the atelier.
+          </p>
+        </div>
+        <div class="standards__card">
+          <div class="standards__marker" aria-hidden="true">&sect; 03</div>
+          <h3 class="standards__heading">Finite Edition Registry</h3>
+          <p class="standards__text">
+            Editions are released in strictly numbered seasonal allocations. When a seasonal vault closes, matrices are retired and never mass-reproduced.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Catalog Section 3: Backpacks -->
   <section class="section preview" id="shop-backpack">
     <div class="wrap">
-      <h2 class="preview__heading">Backpacks</h2>
+      <div class="preview__header">
+        <div>
+          <p class="preview__eyebrow">Edition III &middot; Haute Utility Haulers</p>
+          <h2 class="preview__heading">Backpacks</h2>
+          <p class="preview__lead">Full-grain black leather carrying all-over molten gold drip and bespoke crest hardware.</p>
+        </div>
+        <a class="preview__jump hover-wght" href="#disciplines">The Disciplines &darr;</a>
+      </div>
       <div class="grid" data-grid="Backpack"></div>
     </div>
   </section>
 
+  <!-- Section 3: The Four Disciplines of Craft -->
+  <section class="section disciplines" id="disciplines" aria-label="The Four Disciplines of Craft">
+    <div class="wrap">
+      <div class="disciplines__intro">
+        <p class="section-tag">Materiality &middot; Structural Lexicon</p>
+        <h2 class="disciplines__title">The Four Disciplines</h2>
+        <p class="disciplines__lead">Every category in the maison adheres to specialized fabrication parameters and hand-finished ornamental standards.</p>
+      </div>
+      <div class="disciplines__grid">
+        <article class="disciplines__card">
+          <span class="disciplines__roman">I</span>
+          <h3 class="disciplines__name">The Vessel</h3>
+          <p class="disciplines__category">Tumblers</p>
+          <p class="disciplines__desc">Double-wall vacuum 304 stainless steel. 360-degree continuous relief that rejects an unfinished rear.</p>
+          <p class="disciplines__sub">Cold-cast polymer relief &middot; Ergonomic carry loop</p>
+        </article>
+        <article class="disciplines__card">
+          <span class="disciplines__roman">II</span>
+          <h3 class="disciplines__name">The Crown</h3>
+          <p class="disciplines__category">Caps</p>
+          <p class="disciplines__desc">High-profile architectural crown constructed from premium wool blend and lined with damask satin.</p>
+          <p class="disciplines__sub">Gold bullion wire &middot; Antiqued brass adjuster</p>
+        </article>
+        <article class="disciplines__card">
+          <span class="disciplines__roman">III</span>
+          <h3 class="disciplines__name">The Hauler</h3>
+          <p class="disciplines__category">Backpacks</p>
+          <p class="disciplines__desc">Architectural luggage cut from heavy full-grain leather, reinforced against daily wear and heavy loads.</p>
+          <p class="disciplines__sub">Molten alloy drip &middot; Padded laptop sanctuary</p>
+        </article>
+        <article class="disciplines__card">
+          <span class="disciplines__roman">IV</span>
+          <h3 class="disciplines__name">The Foundation</h3>
+          <p class="disciplines__category">Shoes</p>
+          <p class="disciplines__desc">Low-profile luxury sneaker silhouettes engineered with cushioned support and crest insignias.</p>
+          <p class="disciplines__sub">Full-grain upper &middot; Sculpted metallic crest</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Catalog Section 4: Shoes -->
   <section class="section preview" id="shop-shoes">
     <div class="wrap">
-      <h2 class="preview__heading">Shoes</h2>
+      <div class="preview__header">
+        <div>
+          <p class="preview__eyebrow">Edition IV &middot; Sculpted Footwear</p>
+          <h2 class="preview__heading">Shoes</h2>
+          <p class="preview__lead">Minimalist court sneakers elevated with bespoke metallic insignias and hand-stitched detailing.</p>
+        </div>
+        <a class="preview__jump hover-wght" href="#register">The Register &darr;</a>
+      </div>
       <div class="grid" data-grid="Shoes"></div>
+    </div>
+  </section>
+
+  <!-- Section 5: The Private Register -->
+  <section class="section register" id="register" aria-label="The Private Register">
+    <div class="wrap">
+      <div class="register__frame">
+        <p class="section-tag">Private Salon &middot; Advance Allocation</p>
+        <h2 class="register__title">The Gilded Register</h2>
+        <p class="register__lead">
+          Subscribers to the Register receive private telegraphs 48 hours prior to new Edition releases and seasonal vault closures.
+        </p>
+        <form class="register__form" onsubmit="event.preventDefault(); this.querySelector('button').textContent = 'Inscribed'; this.querySelector('input').disabled = true;">
+          <label for="registerEmail" class="visually-hidden">Email address</label>
+          <input class="register__input" type="email" id="registerEmail" name="email" placeholder="Enter your email address" required autocomplete="email">
+          <button class="btn register__submit" type="submit">Inscribe</button>
+        </form>
+        <p class="register__note muted">Discreet correspondence only. No mass dispatches.</p>
+      </div>
     </div>
   </section>
 </main>
@@ -81,6 +354,96 @@
     <p class="muted footer__legal">Goldbourne &amp; Co. — Gilded Editions.</p>
   </div>
 </footer>
+
+<!-- Menu Drawer (Slide-over Left) -->
+<div class="menu-backdrop" id="menuBackdrop" aria-hidden="true" hidden></div>
+<aside class="menu-drawer" id="menuDrawer" role="dialog" aria-modal="true" aria-label="Navigation Menu" aria-hidden="true" tabindex="-1" hidden>
+  <div class="menu-drawer__header">
+    <span class="menu-drawer__eyebrow">Maison Index</span>
+    <button class="menu-drawer__close" id="menuClose" type="button" aria-label="Close menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+  <div class="menu-drawer__body">
+    <p class="menu-drawer__tag">Curated Disciplines</p>
+    <nav class="menu-drawer__nav" aria-label="Mobile Navigation">
+      <ul class="menu-drawer__list" id="mobileMenuNav"></ul>
+    </nav>
+    <div class="menu-drawer__footer">
+      <p class="menu-drawer__brand">Goldbourne &amp; Co.</p>
+      <p class="menu-drawer__motto">Ceremonial Vessels &amp; Archival Artifacts</p>
+    </div>
+  </div>
+</aside>
+
+<!-- Cart Drawer (Slide-over) -->
+<div class="cart-backdrop" id="cartBackdrop" aria-hidden="true"></div>
+<aside class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle" aria-hidden="true" tabindex="-1">
+  <div class="cart-drawer__header">
+    <div class="cart-drawer__title-wrap">
+      <h2 class="cart-drawer__title" id="cartDrawerTitle">Your Selection</h2>
+      <span class="cart-drawer__count-pill" id="cartDrawerCount">(0 items)</span>
+    </div>
+    <button class="cart-drawer__close" id="cartClose" type="button" aria-label="Close cart">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="cart-drawer__body">
+    <div class="cart-items" id="cartItemsList"></div>
+
+    <section class="cart-recs" id="cartRecs" aria-label="Curated Recommendations">
+      <div class="cart-recs__header">
+        <p class="cart-recs__tag">Curated Additions</p>
+        <h3 class="cart-recs__title">Gợi ý sản phẩm tuyển chọn</h3>
+      </div>
+      <div class="cart-recs__list" id="cartRecsList"></div>
+    </section>
+  </div>
+
+  <div class="cart-drawer__footer" id="cartFooter">
+    <div class="cart-drawer__summary">
+      <div class="cart-drawer__row">
+        <span class="cart-drawer__label">Subtotal</span>
+        <span class="cart-drawer__value" id="cartSubtotal">$0.00</span>
+      </div>
+      <p class="cart-drawer__perk">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Complimentary insured courier transit &amp; presentation casket
+      </p>
+    </div>
+    <button class="btn btn--checkout" id="cartCheckout" type="button">
+      <span>Proceed to Checkout</span>
+      <span class="checkout-arrow" aria-hidden="true">&rarr;</span>
+    </button>
+    <button class="cart-drawer__continue" id="cartContinue" type="button">
+      Continue Discovering
+    </button>
+  </div>
+</aside>
+
+<!-- Checkout Confirmation Dialog -->
+<div class="cart-checkout-modal" id="cartCheckoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutModalTitle">
+  <div class="cart-checkout-box">
+    <p class="cart-checkout-box__tag">Client Consignment Registry</p>
+    <h3 class="cart-checkout-box__title" id="checkoutModalTitle">Order Allocation Initiated</h3>
+    <div class="cart-checkout-box__ref" id="checkoutRef">ALLOC-GB26-0000</div>
+    <p class="cart-checkout-box__desc" id="checkoutSummary">0 Editions reserved.</p>
+    <p class="cart-checkout-box__desc">
+      Your consignment allocation is securely confirmed. Archival presentation packaging and insured transit documentation will dispatch to your private register.
+    </p>
+    <button class="btn" id="checkoutFinish" type="button">Confirm Order</button>
+    <button class="cart-drawer__continue" id="checkoutDismiss" type="button">Return to Selection</button>
+  </div>
+</div>
 
 <script type="module" src="/themes/light-minimal/assets/main.js"></script>
 </body>
