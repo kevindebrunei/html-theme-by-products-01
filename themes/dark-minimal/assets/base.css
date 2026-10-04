@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300..700&family=Inter:wght@300..700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/*
+  Header dính (components.css .header) và co lại khi cuộn qua hero:
+    - ≥560px viewport: 46px
+    - <560px: 89px
+*/
+html { scroll-behavior: smooth; scroll-padding-top: 89px; }
+
+@media (min-width: 560px) {
+  html { scroll-padding-top: 46px; }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--fs-3);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 0;
+}
+
+h1 { font-size: clamp(var(--fs-7), 6vw, var(--fs-9)); }
+h2 { font-size: clamp(var(--fs-6), 3vw, var(--fs-7)); }
+
+/* Wordmark là ngoại lệ duy nhất dùng weight 600 */
+.wordmark {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--fs-5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+h3 {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--fs-3);
+  margin: 0;
+}
+
+p { margin: 0 0 var(--space-2); }
+
+a { color: inherit; text-decoration: none; }
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+img { display: block; max-width: 100%; }
+
+.wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--space-3); }
+@media (max-width: 599px) {
+  .wrap { padding-inline: 1rem; }
+}
+.section { padding-block: var(--space-6); }
+
+/* Nhãn dòng sản phẩm và họ style — Inter 500 */
+.label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--fs-1);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.muted { color: var(--muted); }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* Motion: Mặc định là hiện */
+.reveal { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    @keyframes reveal-in {
+      from { opacity: 0; transform: translateY(1.5rem); }
+      to   { opacity: 1; transform: none; }
+    }
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+  }
+
+  .js-reveal { opacity: 0; transform: translateY(1.5rem);
+               transition: opacity var(--dur) var(--ease-lux), transform var(--dur) var(--ease-lux); }
+  .js-reveal.is-in { opacity: 1; transform: none; }
+}
+
+/* Variable Font Hover */
+.hover-wght { transition: font-weight var(--dur) var(--ease-lux); }
+.hover-wght:hover, .hover-wght:focus-visible { font-weight: 600; }
+.wordmark.hover-wght:hover, .wordmark.hover-wght:focus-visible { font-weight: 700; }
+
+/* Vertical Cut Reveal */
+.cut { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.cut__in { display: inline-block; }
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes cut-up {
+    from { transform: translateY(100%); }
+    to   { transform: none; }
+  }
+  .cut__in {
+    animation: cut-up var(--dur-slow) var(--ease-lux) backwards;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

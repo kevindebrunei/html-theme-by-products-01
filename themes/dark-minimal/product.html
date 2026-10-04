@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edition | Goldbourne &amp; Co.</title>
+<link rel="stylesheet" href="/themes/dark-minimal/assets/tokens.css">
+<link rel="stylesheet" href="/themes/dark-minimal/assets/base.css">
+<link rel="stylesheet" href="/themes/dark-minimal/assets/components.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap header__inner">
+    <button class="menu-btn" id="menuToggle" type="button" aria-label="Open menu" aria-controls="menuDrawer" aria-expanded="false">
+      <svg class="menu-btn__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3.5" y1="7" x2="20.5" y2="7"></line>
+        <line x1="3.5" y1="12" x2="20.5" y2="12"></line>
+        <line x1="3.5" y1="17" x2="20.5" y2="17"></line>
+      </svg>
+    </button>
+    <a class="wordmark hover-wght" href="/themes/dark-minimal/index.html">Goldbourne<span class="wordmark__co">&amp; Co.</span></a>
+    <div class="header__nav-wrap">
+      <nav class="nav" aria-label="Shop">
+        <ul class="nav__list" id="typeNav"></ul>
+      </nav>
+      <button class="cart-btn" id="cartToggle" type="button" aria-label="Open cart (0 items)" aria-controls="cartDrawer" aria-expanded="false">
+        <svg class="cart-btn__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4.5 8.5h15l-1.2 12.5H5.7L4.5 8.5z"/>
+          <path d="M8.5 8.5V5.5a3.5 3.5 0 0 1 7 0v3"/>
+        </svg>
+        <span class="cart-btn__count" id="cartCount" aria-hidden="true">0</span>
+      </button>
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"></div>
+</header>
+
+<main class="wrap section" id="pdp">
+  <p class="muted" id="pdpError" hidden>Edition not found.</p>
+
+  <nav class="pdp-breadcrumb" id="pdpBreadcrumb" aria-label="Breadcrumb" hidden>
+    <a class="pdp-breadcrumb__back hover-wght" id="pdpBackLink" href="/themes/dark-minimal/index.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span id="pdpBackText">Collection</span>
+    </a>
+    <span class="pdp-breadcrumb__sep" aria-hidden="true">&sol;</span>
+    <span class="pdp-breadcrumb__current" id="pdpCrumbCurrent">Edition</span>
+  </nav>
+
+  <div class="pdp" id="pdpContent" hidden>
+    <!-- Gallery Column -->
+    <div class="pdp__gallery-col">
+      <div class="pdp-stage" id="pdpStage">
+        <div class="pdp-stage__mat">
+          <div class="pdp-stage__frame">
+            <img class="pdp-stage__img" id="stageImg" src="/themes/dark-minimal/assets/hero-tumbler.jpg" alt="" width="1264" height="1264">
+          </div>
+        </div>
+        <div class="pdp-stage__meta">
+          <span class="label muted" id="stageCaption">View 1 of 5</span>
+          <span class="pdp-stage__badge" id="stageBadge">Tactile Relief</span>
+        </div>
+      </div>
+      <div class="gallery pdp-gallery" id="gallery" role="region" aria-label="Edition gallery thumbnails"></div>
+    </div>
+
+    <!-- Product Dossier Info Column (Sticky) -->
+    <div class="pdp__info">
+      <div class="pdp__header-meta">
+        <p class="section-tag pdp__discipline-tag" id="pdpDisciplineTag"></p>
+        <p class="label muted pdp__meta" id="pdpMeta"></p>
+      </div>
+      <h1 class="pdp__title" id="pdpTitle"></h1>
+      <div class="pdp__price-row">
+        <span class="pdp__price" id="pdpPrice"></span>
+        <s class="price__was pdp__was" id="pdpCompareAt" hidden></s>
+        <span class="pdp__allocation-pill" id="pdpAllocation">Consignment Allocation</span>
+      </div>
+
+      <div class="pdp__hook-wrap">
+        <blockquote class="pdp__hook" id="pdpHook"></blockquote>
+      </div>
+
+      <!-- Shared Catalog Description & Discipline Provenance -->
+      <div class="pdp__catalog-box" id="pdpCatalogBox">
+        <p class="section-tag pdp__catalog-eyebrow" id="pdpCatalogEyebrow">Discipline Provenance</p>
+        <p class="pdp__catalog-desc" id="pdpCatalogDesc"></p>
+        <div class="pdp__highlights" id="pdpHighlights"></div>
+      </div>
+
+      <!-- Variants -->
+      <div id="pdpVariants" class="pdp__variants-wrap"></div>
+
+      <!-- Purchasing Actions -->
+      <div class="pdp__actions">
+        <div class="pdp__qty" role="group" aria-label="Selection Quantity">
+          <button type="button" class="pdp__qty-btn" id="pdpQtyMinus" aria-label="Decrease quantity">&minus;</button>
+          <input type="number" class="pdp__qty-input" id="pdpQty" value="1" min="1" max="99" aria-label="Quantity">
+          <button type="button" class="pdp__qty-btn" id="pdpQtyPlus" aria-label="Increase quantity">&plus;</button>
+        </div>
+        <button class="btn btn--pdp-add" type="button" id="pdpAdd">
+          <span>Add to Selection</span>
+          <span class="pdp-add__arrow" aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+
+      <!-- Maison Client Promises -->
+      <ul class="pdp__perks">
+        <li class="pdp__perk-item">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <rect x="2" y="7" width="20" height="14" rx="0" ry="0"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+          Archival presentation casket &amp; numbered register entry
+        </li>
+        <li class="pdp__perk-item">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Complimentary insured courier transit from the atelier
+        </li>
+        <li class="pdp__perk-item">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Finite seasonal matrix &mdash; retired upon vault closure
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Deep Dossier Sections -->
+  <div class="pdp__dossier-wrap" id="pdpSectionsWrap" hidden>
+    <div class="pdp-dossier" id="pdpSections"></div>
+  </div>
+
+  <!-- The Maison Standards Strip -->
+  <section class="section standards pdp-standards" aria-label="Maison Standards">
+    <div class="standards__intro">
+      <p class="section-tag">Client Services &middot; Provenance</p>
+      <h2 class="standards__title">The Maison Standards</h2>
+    </div>
+    <div class="standards__grid">
+      <div class="standards__card">
+        <div class="standards__marker" aria-hidden="true">&sect; 01</div>
+        <h3 class="standards__heading">Archival Presentation Packaging</h3>
+        <p class="standards__text">
+          Every Edition is nestled in a custom matte-black rigid presentation casket, wrapped in gold-debossed archival parchment and sealed with our insignia.
+        </p>
+      </div>
+      <div class="standards__card">
+        <div class="standards__marker" aria-hidden="true">&sect; 02</div>
+        <h3 class="standards__heading">Insured Courier Dispatch</h3>
+        <p class="standards__text">
+          Complimentary white-glove, insured courier transit on all Editions. Each consignment is tracked with direct provenance documentation from the atelier.
+        </p>
+      </div>
+      <div class="standards__card">
+        <div class="standards__marker" aria-hidden="true">&sect; 03</div>
+        <h3 class="standards__heading">Finite Edition Registry</h3>
+        <p class="standards__text">
+          Editions are released in strictly numbered seasonal allocations. When a seasonal vault closes, matrices are retired and never mass-reproduced.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Curated Related Editions Section -->
+  <section class="section preview pdp-related" id="pdpRelated" aria-label="Related Editions" hidden>
+    <div class="preview__header">
+      <div>
+        <p class="preview__eyebrow" id="pdpRelatedEyebrow">Archive Additions</p>
+        <h2 class="preview__heading" id="pdpRelatedTitle">Related Editions from the Archive</h2>
+        <p class="preview__lead" id="pdpRelatedLead">Sister silhouettes sharing this discipline&rsquo;s ornamental and material parameters.</p>
+      </div>
+    </div>
+    <div class="grid" id="pdpRelatedGrid"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p class="label">Shop</p>
+    <ul class="footer__list" id="footerNav"></ul>
+    <p class="muted footer__legal">Goldbourne &amp; Co. — Gilded Editions.</p>
+  </div>
+</footer>
+
+<!-- Menu Drawer (Slide-over Left) -->
+<div class="menu-backdrop" id="menuBackdrop" aria-hidden="true" hidden></div>
+<aside class="menu-drawer" id="menuDrawer" role="dialog" aria-modal="true" aria-label="Navigation Menu" aria-hidden="true" tabindex="-1" hidden>
+  <div class="menu-drawer__header">
+    <span class="menu-drawer__eyebrow">Maison Index</span>
+    <button class="menu-drawer__close" id="menuClose" type="button" aria-label="Close menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+  <div class="menu-drawer__body">
+    <p class="menu-drawer__tag">Curated Disciplines</p>
+    <nav class="menu-drawer__nav" aria-label="Mobile Navigation">
+      <ul class="menu-drawer__list" id="mobileMenuNav"></ul>
+    </nav>
+    <div class="menu-drawer__footer">
+      <p class="menu-drawer__brand">Goldbourne &amp; Co.</p>
+      <p class="menu-drawer__motto">Ceremonial Vessels &amp; Archival Artifacts</p>
+    </div>
+  </div>
+</aside>
+
+<!-- Cart Drawer (Slide-over) -->
+<div class="cart-backdrop" id="cartBackdrop" aria-hidden="true"></div>
+<aside class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle" aria-hidden="true" tabindex="-1">
+  <div class="cart-drawer__header">
+    <div class="cart-drawer__title-wrap">
+      <h2 class="cart-drawer__title" id="cartDrawerTitle">Your Selection</h2>
+      <span class="cart-drawer__count-pill" id="cartDrawerCount">(0 items)</span>
+    </div>
+    <button class="cart-drawer__close" id="cartClose" type="button" aria-label="Close cart">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="cart-drawer__body">
+    <div class="cart-items" id="cartItemsList"></div>
+
+    <section class="cart-recs" id="cartRecs" aria-label="Curated Recommendations">
+      <div class="cart-recs__header">
+        <p class="cart-recs__tag">Curated Additions</p>
+        <h3 class="cart-recs__title">Gợi ý sản phẩm tuyển chọn</h3>
+      </div>
+      <div class="cart-recs__list" id="cartRecsList"></div>
+    </section>
+  </div>
+
+  <div class="cart-drawer__footer" id="cartFooter">
+    <div class="cart-drawer__summary">
+      <div class="cart-drawer__row">
+        <span class="cart-drawer__label">Subtotal</span>
+        <span class="cart-drawer__value" id="cartSubtotal">$0.00</span>
+      </div>
+      <p class="cart-drawer__perk">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Complimentary insured courier transit &amp; presentation casket
+      </p>
+    </div>
+    <button class="btn btn--checkout" id="cartCheckout" type="button">
+      <span>Proceed to Checkout</span>
+      <span class="checkout-arrow" aria-hidden="true">&rarr;</span>
+    </button>
+    <button class="cart-drawer__continue" id="cartContinue" type="button">
+      Continue Discovering
+    </button>
+  </div>
+</aside>
+
+<!-- Checkout Confirmation Dialog -->
+<div class="cart-checkout-modal" id="cartCheckoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutModalTitle">
+  <div class="cart-checkout-box">
+    <p class="cart-checkout-box__tag">Client Consignment Registry</p>
+    <h3 class="cart-checkout-box__title" id="checkoutModalTitle">Order Allocation Initiated</h3>
+    <div class="cart-checkout-box__ref" id="checkoutRef">ALLOC-GB26-0000</div>
+    <p class="cart-checkout-box__desc" id="checkoutSummary">0 Editions reserved.</p>
+    <p class="cart-checkout-box__desc">
+      Your consignment allocation is securely confirmed. Archival presentation packaging and insured transit documentation will dispatch to your private register.
+    </p>
+    <button class="btn" id="checkoutFinish" type="button">Confirm Order</button>
+    <button class="cart-drawer__continue" id="checkoutDismiss" type="button">Return to Selection</button>
+  </div>
+</div>
+
+<script type="module" src="/themes/dark-minimal/assets/product.js"></script>
+</body>
+</html>
