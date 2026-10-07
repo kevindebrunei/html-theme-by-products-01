@@ -6,6 +6,7 @@ import {
 import { escapeHtml, navHtml, cardHtml, ALT_SUFFIX } from './render.mjs'
 import { mountCartUI } from './cart.mjs'
 import { mountMenuUI } from './menu.mjs'
+import { resolveUpsellBundle, calculateBundlePricing } from './upsell.mjs'
 
 async function loadProducts() {
   for (const url of ['../../products/products.json', '/products/products.json']) {
@@ -260,6 +261,298 @@ function renderRelated(products, currentProduct, discipline) {
   gridEl.innerHTML = related.map((p) => cardHtml(p, { noSwap: NO_SWAP.has(p.sku) })).join('')
 }
 
+function mountEnsembleUI({ currentProduct, allProducts, cartApi }) {
+  const widgetEl = document.getElementById('pdpBundleWidget')
+  const ensembleEl = document.getElementById('pdpEnsemble')
+  if (!widgetEl && !ensembleEl) return
+
+  const bundle = resolveUpsellBundle(currentProduct, allProducts)
+  if (!bundle || !bundle.companions || bundle.companions.length === 0) return
+
+  const items = [currentProduct, ...bundle.companions.map((c) => c.product)]
+
+  const state = {
+    checked: items.reduce((acc, it) => {
+      acc[it.sku] = true
+      return acc
+    }, {}),
+    variants: items.reduce((acc, it) => {
+      acc[it.sku] = (it.variants && it.variants.length > 0) ? it.variants[0].value : null
+      return acc
+    }, {}),
+  }
+
+  function getItemPrice(product) {
+    const selectedVariantVal = state.variants[product.sku]
+    if (selectedVariantVal && product.variants) {
+      const v = product.variants.find((x) => x.value === selectedVariantVal)
+      if (v && v.price != null) return Number(v.price)
+    }
+    return Number(product.price) || 0
+  }
+
+  function getCalculatedPricing() {
+    const checkedList = items
+      .filter((it) => state.checked[it.sku])
+      .map((it) => ({ sku: it.sku, price: getItemPrice(it) }))
+    return calculateBundlePricing(checkedList, 0.10)
+  }
+
+  function renderWidget() {
+    if (!widgetEl) return
+    const pricing = getCalculatedPricing()
+
+    widgetEl.innerHTML = `
+      <div class="pdp-bundle-widget__header">
+        <p class="pdp-bundle-widget__tag">Curated Ensemble Offer</p>
+        <h3 class="pdp-bundle-widget__title">Complete The Set (10% Off)</h3>
+      </div>
+      <ul class="pdp-bundle-list" role="list">
+        ${items.map((it, idx) => {
+          const isMain = idx === 0
+          const isChecked = state.checked[it.sku]
+          const price = getItemPrice(it)
+          const hasVariants = it.variants && it.variants.length > 0
+          const selectedVal = state.variants[it.sku]
+          const discPrice = pricing.isDiscounted ? Math.round(price * 0.9 * 100) / 100 : price
+
+          return `
+            <li class="pdp-bundle-item">
+              <input type="checkbox" class="pdp-bundle-item__check" id="widgetCheck_${escapeHtml(it.sku)}"
+                     data-sku="${escapeHtml(it.sku)}" ${isChecked ? 'checked' : ''} ${isMain ? 'disabled' : ''}
+                     aria-label="Include ${escapeHtml(it.title)}">
+              <img class="pdp-bundle-item__thumb" src="${escapeHtml(it.images?.[0] ?? '')}" alt="" width="48" height="48" loading="lazy">
+              <div class="pdp-bundle-item__info">
+                <a class="pdp-bundle-item__title" href="/themes/light-minimal/product.html?sku=${encodeURIComponent(it.sku)}" title="${escapeHtml(it.title)}">
+                  ${escapeHtml(it.title)}
+                </a>
+                <div class="pdp-bundle-item__meta">
+                  ${pricing.isDiscounted ? `
+                    <span style="font-weight: 500; color: var(--fg);">${formatPrice(discPrice)}</span>
+                    <s style="color: var(--muted);">${formatPrice(price)}</s>
+                  ` : `
+                    <span>${formatPrice(price)}</span>
+                  `}
+                  ${hasVariants ? `
+                    <select class="pdp-bundle-item__select" data-sku="${escapeHtml(it.sku)}" aria-label="Select size for ${escapeHtml(it.title)}">
+                      ${it.variants.map((v) => `
+                        <option value="${escapeHtml(v.value)}" ${v.value === selectedVal ? 'selected' : ''}>
+                          ${escapeHtml(v.value)}
+                        </option>
+                      `).join('')}
+                    </select>
+                  ` : ''}
+                </div>
+              </div>
+            </li>
+          `
+        }).join('')}
+      </ul>
+
+      <div class="pdp-bundle-pricing">
+        <div class="pdp-bundle-pricing__amounts">
+          <span class="pdp-bundle-pricing__total">${formatPrice(pricing.discountedTotal)}</span>
+          ${pricing.isDiscounted ? `<s class="pdp-bundle-pricing__was">${formatPrice(pricing.originalTotal)}</s>` : ''}
+        </div>
+        ${pricing.isDiscounted ? `<span class="pdp-bundle-pricing__badge">Save ${formatPrice(pricing.savingsTotal)} (10% OFF)</span>` : ''}
+      </div>
+
+      <button type="button" class="btn btn--pdp-add btn--bundle-add" id="widgetAddBundle">
+        <span>${pricing.isDiscounted ? 'Add Ensemble to Selection' : 'Add to Selection'}</span>
+        <span aria-hidden="true">&rarr;</span>
+      </button>
+
+      <button type="button" class="pdp-bundle-widget__scroll" id="widgetScrollEnsemble">
+        Explore Full Ensemble Specs &darr;
+      </button>
+    `
+
+    widgetEl.hidden = false
+  }
+
+  function renderShowcase() {
+    if (!ensembleEl) return
+    const pricing = getCalculatedPricing()
+
+    const titleEl = document.getElementById('ensembleTitle')
+    const leadEl = document.getElementById('ensembleLead')
+    const gridEl = document.getElementById('ensembleGrid')
+    const footerEl = document.getElementById('ensembleFooter')
+
+    if (titleEl) titleEl.textContent = bundle.ensembleTitle
+    if (leadEl) leadEl.textContent = bundle.ensembleSubtitle
+
+    if (gridEl) {
+      gridEl.innerHTML = items.map((it, idx) => {
+        const isMain = idx === 0
+        const isChecked = state.checked[it.sku]
+        const price = getItemPrice(it)
+        const discPrice = pricing.isDiscounted ? Math.round(price * 0.9 * 100) / 100 : price
+        const badge = isMain ? 'Primary Edition' : (bundle.companions[idx - 1]?.badge ?? 'Ensemble Complement')
+        const hasVariants = it.variants && it.variants.length > 0
+        const selectedVal = state.variants[it.sku]
+
+        return `
+          <article class="pdp-ensemble-card${isChecked ? ' is-active' : ''}" id="ensembleCard_${escapeHtml(it.sku)}">
+            <span class="pdp-ensemble-card__badge">${escapeHtml(badge)}</span>
+            <div class="pdp-ensemble-card__img-wrap">
+              <a href="/themes/light-minimal/product.html?sku=${encodeURIComponent(it.sku)}">
+                <img class="pdp-ensemble-card__img" src="${escapeHtml(it.images?.[0] ?? '')}" alt="${escapeHtml(it.title)}" width="400" height="400" loading="lazy">
+              </a>
+            </div>
+            <div class="pdp-ensemble-card__meta">
+              <span>${escapeHtml(it.type)}</span>
+              <span>&middot;</span>
+              ${pricing.isDiscounted ? `
+                <strong style="color: var(--fg);">${formatPrice(discPrice)}</strong>
+                <s style="color: var(--muted);">${formatPrice(price)}</s>
+              ` : `
+                <span>${formatPrice(price)}</span>
+              `}
+            </div>
+            <h3 class="pdp-ensemble-card__title">
+              <a href="/themes/light-minimal/product.html?sku=${encodeURIComponent(it.sku)}" style="color: inherit; text-decoration: none;">
+                ${escapeHtml(it.title)}
+              </a>
+            </h3>
+
+            <div class="pdp-ensemble-card__controls">
+              <label class="pdp-ensemble-card__check-label" for="showcaseCheck_${escapeHtml(it.sku)}">
+                <input type="checkbox" class="pdp-bundle-item__check" id="showcaseCheck_${escapeHtml(it.sku)}"
+                       data-sku="${escapeHtml(it.sku)}" ${isChecked ? 'checked' : ''} ${isMain ? 'disabled' : ''}>
+                <span>${isMain ? 'Current Edition' : 'Include in Ensemble'}</span>
+              </label>
+
+              ${hasVariants ? `
+                <select class="pdp-bundle-item__select" data-sku="${escapeHtml(it.sku)}" aria-label="Select size for ${escapeHtml(it.title)}">
+                  ${it.variants.map((v) => `
+                    <option value="${escapeHtml(v.value)}" ${v.value === selectedVal ? 'selected' : ''}>
+                      ${escapeHtml(v.value)}
+                    </option>
+                  `).join('')}
+                </select>
+              ` : ''}
+            </div>
+          </article>
+        `
+      }).join('')
+    }
+
+    if (footerEl) {
+      footerEl.innerHTML = `
+        <div class="pdp-ensemble__footer-info">
+          <h3 class="pdp-ensemble__footer-title">
+            Ensemble Total: ${formatPrice(pricing.discountedTotal)}
+            ${pricing.isDiscounted ? `<s style="font-size: var(--fs-3); color: var(--muted); font-weight: normal; margin-left: 0.5rem;">${formatPrice(pricing.originalTotal)}</s>` : ''}
+          </h3>
+          ${pricing.isDiscounted ? `
+            <span class="pdp-bundle-pricing__badge" style="width: fit-content;">Save ${formatPrice(pricing.savingsTotal)} (10% OFF Ensemble Allocation)</span>
+          ` : `
+            <span style="font-size: var(--fs-1); color: var(--muted);">Select companion editions to activate 10% savings</span>
+          `}
+        </div>
+
+        <button type="button" class="btn btn--pdp-add" id="showcaseAddBundle" style="width: auto; min-width: 260px;">
+          <span>${pricing.isDiscounted ? 'Add Complete Ensemble to Selection' : 'Add Selection to Cart'}</span>
+          <span aria-hidden="true">&rarr;</span>
+        </button>
+      `
+    }
+
+    ensembleEl.hidden = false
+  }
+
+  function handleCheckToggle(sku, isChecked) {
+    state.checked[sku] = isChecked
+    renderWidget()
+    renderShowcase()
+  }
+
+  function handleVariantChange(sku, variantVal) {
+    state.variants[sku] = variantVal
+    renderWidget()
+    renderShowcase()
+  }
+
+  function handleAddBundle(triggerBtn) {
+    const pricing = getCalculatedPricing()
+    const selectedItems = items.filter((it) => state.checked[it.sku])
+    const mainQtyInput = document.getElementById('pdpQty')
+    const mainQty = mainQtyInput ? Math.max(1, parseInt(mainQtyInput.value, 10) || 1) : 1
+
+    selectedItems.forEach((it) => {
+      const origPrice = getItemPrice(it)
+      const finalPrice = pricing.isDiscounted ? Math.round(origPrice * 0.9 * 100) / 100 : origPrice
+      const qty = it.sku === currentProduct.sku ? mainQty : 1
+
+      cartApi.addItem({
+        sku: it.sku,
+        title: it.title,
+        type: it.type,
+        price: finalPrice,
+        compareAt: pricing.isDiscounted ? origPrice : it.compareAt,
+        image: it.images?.[0],
+        variantValue: state.variants[it.sku] ?? null,
+        variantLabel: it.variantLabel ?? null,
+        quantity: qty,
+      })
+    })
+
+    if (triggerBtn) {
+      const span = triggerBtn.querySelector('span') || triggerBtn
+      const origText = span.textContent
+      span.textContent = 'Ensemble Added'
+      setTimeout(() => { span.textContent = origText }, 1800)
+    }
+  }
+
+  widgetEl.addEventListener('change', (e) => {
+    const check = e.target.closest('input[type="checkbox"][data-sku]')
+    if (check) {
+      handleCheckToggle(check.dataset.sku, check.checked)
+      return
+    }
+    const sel = e.target.closest('select[data-sku]')
+    if (sel) {
+      handleVariantChange(sel.dataset.sku, sel.value)
+    }
+  })
+
+  widgetEl.addEventListener('click', (e) => {
+    const addBtn = e.target.closest('#widgetAddBundle')
+    if (addBtn) {
+      handleAddBundle(addBtn)
+      return
+    }
+    const scrollBtn = e.target.closest('#widgetScrollEnsemble')
+    if (scrollBtn && ensembleEl) {
+      ensembleEl.scrollIntoView({ behavior: 'smooth' })
+    }
+  })
+
+  ensembleEl.addEventListener('change', (e) => {
+    const check = e.target.closest('input[type="checkbox"][data-sku]')
+    if (check) {
+      handleCheckToggle(check.dataset.sku, check.checked)
+      return
+    }
+    const sel = e.target.closest('select[data-sku]')
+    if (sel) {
+      handleVariantChange(sel.dataset.sku, sel.value)
+    }
+  })
+
+  ensembleEl.addEventListener('click', (e) => {
+    const addBtn = e.target.closest('#showcaseAddBundle')
+    if (addBtn) {
+      handleAddBundle(addBtn)
+    }
+  })
+
+  renderWidget()
+  renderShowcase()
+}
+
 async function init() {
   const products = await loadProducts()
   renderNav()
@@ -330,6 +623,7 @@ async function init() {
   renderRelated(products, product, discipline)
 
   const cartApi = mountCartUI({ products })
+  mountEnsembleUI({ currentProduct: product, allProducts: products, cartApi })
 
   const addBtn = document.getElementById('pdpAdd')
   if (addBtn) {
@@ -360,3 +654,4 @@ async function init() {
 }
 
 init()
+

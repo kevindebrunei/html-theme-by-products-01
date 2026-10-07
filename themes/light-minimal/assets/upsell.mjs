@@ -4,7 +4,7 @@
 */
 import { CURATED } from './catalog.mjs'
 
-const CLUB_REGEX = /(?:backpack|cap|shoes|tumbler-40oz)-(?:nfl|mlb|nba|wwe)-([a-z0-9-]+?)-(?:bp|cap|snk|tum|\d)/i
+const CLUB_REGEX = /(?:backpack|cap|shoes|tumbler-40oz)-[a-z0-9]+-([a-z0-9-]+?)-(?:bp|cap|snk|tum|\d)/i
 
 export function extractClubOrTheme(product) {
   if (!product) return null
@@ -16,7 +16,7 @@ export function extractClubOrTheme(product) {
   const img = (product.images ?? [])[0] ?? ''
   const parts = img.split('/')
   if (parts.length > 4) {
-    return parts[4].toLowerCase().replace(/^nfl-|^mlb-|^nba-|^wwe-/i, '').replace(/%20/g, '-').trim()
+    return parts[4].toLowerCase().replace(/^[a-z0-9]+-+/i, '').replace(/%20/g, '-').trim()
   }
   return null
 }
