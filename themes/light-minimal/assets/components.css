@@ -2748,4 +2748,322 @@ body.menu-open {
   margin: 0;
 }
 
+/* ==========================================================================
+   PDP Upsell: Compact Widget & Complete Ensemble Showcase
+   ========================================================================== */
+
+/* 1. Compact Widget (Right Column) */
+.pdp-bundle-widget {
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pdp-bundle-widget__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pdp-bundle-widget__tag {
+  font-family: var(--font-body);
+  font-size: var(--fs-1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+
+.pdp-bundle-widget__title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-4);
+  font-weight: 500;
+  color: var(--fg);
+  margin: 0;
+}
+
+.pdp-bundle-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pdp-bundle-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-2);
+}
+
+.pdp-bundle-item__check {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--fg);
+  cursor: pointer;
+}
+
+.pdp-bundle-item__check:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.pdp-bundle-item__thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.pdp-bundle-item__info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.pdp-bundle-item__title {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--fs-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.pdp-bundle-item__title:hover {
+  text-decoration: underline;
+}
+
+.pdp-bundle-item__meta {
+  font-size: var(--fs-1);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.pdp-bundle-item__select {
+  font-family: var(--font-body);
+  font-size: var(--fs-1);
+  padding: 2px 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.pdp-bundle-pricing {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+
+.pdp-bundle-pricing__amounts {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+.pdp-bundle-pricing__total {
+  font-family: var(--font-heading);
+  font-size: var(--fs-5);
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.pdp-bundle-pricing__was {
+  font-size: var(--fs-2);
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.pdp-bundle-pricing__badge {
+  font-family: var(--font-body);
+  font-size: var(--fs-1);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--fg);
+  border: 1px solid var(--gold);
+  padding: 2px 8px;
+}
+
+.btn--bundle-add {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+}
+
+.pdp-bundle-widget__scroll {
+  font-family: var(--font-body);
+  font-size: var(--fs-1);
+  color: var(--muted);
+  text-align: center;
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.pdp-bundle-widget__scroll:hover {
+  color: var(--fg);
+}
+
+/* 2. The Complete Ensemble Showcase Section */
+.pdp-ensemble {
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-6);
+  border-top: 1px solid var(--border);
+}
+
+.pdp-ensemble__header {
+  margin-bottom: var(--space-5);
+  max-width: 800px;
+}
+
+.pdp-ensemble__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.pdp-ensemble-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: var(--mat);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--dur) var(--ease-lux);
+}
+
+.pdp-ensemble-card.is-active {
+  border-color: var(--fg);
+}
+
+.pdp-ensemble-card__badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 2;
+  font-family: var(--font-body);
+  font-size: var(--fs-1);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--bg);
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.pdp-ensemble-card__img-wrap {
+  aspect-ratio: 1;
+  background: var(--bg);
+  overflow: hidden;
+  border: 1px solid rgba(20, 18, 14, 0.06);
+}
+
+.pdp-ensemble-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-lux);
+}
+
+.pdp-ensemble-card:hover .pdp-ensemble-card__img {
+  transform: scale(1.02);
+}
+
+.pdp-ensemble-card__title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-4);
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--fg);
+  margin: 0;
+}
+
+.pdp-ensemble-card__meta {
+  font-size: var(--fs-1);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.pdp-ensemble-card__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+
+.pdp-ensemble-card__check-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-2);
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.pdp-ensemble__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.pdp-ensemble__footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pdp-ensemble__footer-title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-5);
+  font-weight: 500;
+  margin: 0;
+  color: var(--fg);
+}
+
+@media (max-width: 860px) {
+  .pdp-ensemble__grid {
+    grid-template-columns: 1fr;
+  }
+  .pdp-ensemble__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+
 
