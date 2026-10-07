@@ -84,3 +84,51 @@ test('calculateBundlePricing applies 0% discount when only main item is checked'
   assert.equal(result.savingsTotal, 0)
   assert.equal(result.isDiscounted, false)
 })
+
+import { readFileSync } from 'node:fs'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const productsPath = join(__dirname, '../../../products/products.json')
+const realProducts = JSON.parse(readFileSync(productsPath, 'utf8')).products
+
+test('real catalog: Philadelphia Eagles Shoes bundles Cap and Backpack', () => {
+  const eaglesShoes = realProducts.find((p) => p.sku === 'SNK-20260923-XI-010')
+  assert.ok(eaglesShoes)
+  const bundle = resolveUpsellBundle(eaglesShoes, realProducts)
+  assert.equal(bundle.companions.length, 2)
+  const companionTypes = bundle.companions.map((c) => c.product.type)
+  assert.ok(companionTypes.includes('Cap'))
+  assert.ok(companionTypes.includes('Backpack'))
+  assert.equal(bundle.ensembleTitle, 'The Philadelphia Eagles Ensemble')
+})
+
+test('real catalog: Buffalo Bills Backpack bundles Cap and Tumbler companion', () => {
+  const billsBp = realProducts.find((p) => p.sku === 'BP-20260923-XI-020')
+  assert.ok(billsBp)
+  const bundle = resolveUpsellBundle(billsBp, realProducts)
+  assert.equal(bundle.companions.length, 2)
+  const companionTypes = bundle.companions.map((c) => c.product.type)
+  assert.ok(companionTypes.includes('Cap'))
+  assert.ok(companionTypes.includes('Tumbler'))
+})
+
+test('real catalog: Detroit Lions Cap falls back to 2 distinct Curated items', () => {
+  const lionsCap = realProducts.find((p) => p.sku === 'CAP-20260923-UY-021')
+  assert.ok(lionsCap)
+  const bundle = resolveUpsellBundle(lionsCap, realProducts)
+  assert.equal(bundle.companions.length, 2)
+  const companionTypes = bundle.companions.map((c) => c.product.type)
+  // Should have Tumbler and Backpack from Curated
+  assert.equal(new Set(companionTypes).size, 2)
+  assert.ok(!companionTypes.includes('Cap'))
+})
+
+test('edge cases: null or empty inputs return null or safe bundle', () => {
+  assert.equal(resolveUpsellBundle(null, realProducts), null)
+  assert.equal(extractClubOrTheme(null), null)
+  const fallback = resolveUpsellBundle(mockProducts[0], [])
+  assert.equal(fallback.companions.length, 0)
+})
+
